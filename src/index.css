@@ -1,0 +1,15 @@
+/* Deliberately almost empty. Colors, type and spacing become tokens once the
+   first screen is decided, and every text/background pair is checked against
+   WCAG 2.1 AA (4.5:1) from the start - the lesson from Cadence's audit. */
+:root {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #ffffff;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}

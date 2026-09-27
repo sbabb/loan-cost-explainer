@@ -1,0 +1,66 @@
+# Builds the Loan Cost Explainer and publishes it to GitHub Pages on every push to main.
+#
+# One-time setup in the repo: Settings -> Pages -> Source -> "GitHub Actions".
+# After that this runs by itself and the app is live at
+# https://sbabb.github.io/loan-cost-explainer/ a minute or two after each push.
+#
+# The verify step runs lint (and, once they exist, the loan-math checks)
+# before anything is published, so a build with wrong numbers never goes live.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Lets you re-publish from the Actions tab without making a commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# A queued deploy replaces a running one rather than racing it.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Node 24 rather than 20: 20 is past end-of-life, and every action in
+      # this file now runs on the runner's node24 regardless, so pinning the
+      # build itself to an older runtime than the tooling around it bought
+      # nothing.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint and verify
+        run: npm run verify
+
+      - run: npm run build
+
+      - uses: actions/configure-pages@v6
+
+      # v5 is the first release to pin a node24 upload-artifact internally,
+      # which is where the last of the deprecation warnings was coming from -
+      # this file never referenced that action directly.
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
