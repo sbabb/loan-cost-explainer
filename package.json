@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "verify": "eslint ."
+    "verify": "eslint . && node scripts/verify-loan.mjs",
+    "verify:loan": "node scripts/verify-loan.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",
