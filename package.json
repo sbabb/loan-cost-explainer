@@ -8,10 +8,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "verify": "eslint . && node scripts/verify-loan.mjs",
-    "verify:loan": "node scripts/verify-loan.mjs"
+    "verify": "eslint . && node scripts/verify-loan.mjs && node scripts/verify-inputs.mjs && node scripts/verify-contrast.mjs",
+    "verify:loan": "node scripts/verify-loan.mjs",
+    "verify:inputs": "node scripts/verify-inputs.mjs",
+    "verify:contrast": "node scripts/verify-contrast.mjs"
   },
   "dependencies": {
+    "@fontsource/public-sans": "^5.3.0",
+    "@fontsource/source-serif-4": "^5.3.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

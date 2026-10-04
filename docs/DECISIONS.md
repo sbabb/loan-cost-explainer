@@ -43,3 +43,51 @@ and they ask before signing too.
 framing) and new loans only (just another loan calculator).
 **Risk to design around:** the wording can't hedge between "you owe" and
 "you'd owe". Plan: ask which one up front, then write each version plainly.
+
+## 2026-10-04 - A mobile-first website, not an app
+It runs in the browser, designed for a phone first, and widens to a calm
+column on a computer. Lives at sbabb.github.io/loan-cost-explainer.
+**Why:** a loan question is a one-off; nobody installs an app for it. A link
+can sit wherever members already are (online banking, a loan email, a QR
+code on the paper disclosure). Reviewers can try the real thing in seconds.
+Everything runs in the browser, so "nothing you type leaves this page" is
+true.
+**Rejected:** a native app (install friction for a one-time question); an
+installable web app for now (Parking Lot).
+
+## 2026-10-04 - Results: the answer in sentences, matched to the paperwork
+The results screen leads with one plain sentence ("This loan will cost you
+$4,342.18 in interest"), explains in short sentences, then names each number
+the way the Truth in Lending disclosure does ("your papers call this the
+Finance Charge"). The extra-$50 section is a side-by-side table.
+**Why:** sentences answer the question members actually ask; the paperwork
+names build trust and teach the document they already have; a table is the
+clearest way to compare two ways of paying.
+**Rejected:** numbers-only breakdown (R2) and table-first (R3) as the whole
+screen - explored on the results canvas, parts kept.
+
+## 2026-10-04 - Ask "do you already have this loan?" on its own screen first
+The question gets a screen to itself; the inputs that follow are worded for
+the answer ("Find these numbers on your loan papers" or "Enter the numbers
+from the loan offer").
+**Why:** each screen speaks to one situation plainly - the fix for the "both
+audiences" risk. Changing the wording under someone's eyes is disorienting,
+and a screen reader user wouldn't notice it changed.
+**Rejected:** one screen with the question on top and the labels rewriting
+themselves (option A on the first-screen canvas). It saves one tap.
+
+## 2026-10-04 - Ask for the first payment date (existing loans only)
+Month and year, from the payment schedule ("Monthly beginning...").
+**Why:** without it there is no real payoff date, and "when will this be
+paid off?" is half the point. It's printed next to the other numbers.
+**Rejected:** guessing from today's date - wrong for anyone partway through
+a loan. For a loan still being considered, the results assume the first
+payment is next month and say so.
+
+## 2026-10-04 - Catch years typed as payments
+If someone types fewer than 12 payments, stop once and ask: "5 payments is
+less than a year... a 5-year loan is 60 payments", with a button to fix it.
+Pressing Explain again with the same number carries on.
+**Why:** loans are talked about in years and papers count months. It's the
+mistake most likely to produce a confidently wrong answer.
+**Rejected:** blocking anything under 12 (short loans exist); saying nothing.

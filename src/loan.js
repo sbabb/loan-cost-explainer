@@ -54,6 +54,9 @@ export function explainLoan({ amountCents, yearlyRatePercent, termMonths, extraC
 
   return {
     payment,
+    // How much of the very first payment is interest - the same rounding
+    // payOff() uses, so it matches month one of the walk exactly.
+    firstInterest: Math.round(amountCents * (yearlyRatePercent / 100 / 12)),
     asAgreed,
     withExtra,
     monthsSaved: asAgreed.months - withExtra.months,

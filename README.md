@@ -16,4 +16,6 @@ Then open http://localhost:3001.
 
 ## Status
 
-Early. The design decisions are logged in [docs/DECISIONS.md](docs/DECISIONS.md).
+The whole flow works: one question, the loan's numbers, and the explanation.
+`npm run verify` checks the loan math, the input checking and the color
+contrast. The design decisions are logged in [docs/DECISIONS.md](docs/DECISIONS.md).

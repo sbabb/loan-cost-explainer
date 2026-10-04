@@ -1,15 +1,475 @@
-/* Deliberately almost empty. Colors, type and spacing become tokens once the
-   first screen is decided, and every text/background pair is checked against
-   WCAG 2.1 AA (4.5:1) from the start - the lesson from Cadence's audit. */
+/* Colors, type and spacing as named tokens. Every text/background pair is
+   checked against WCAG 2.1 AA by scripts/verify-contrast.mjs (4.5:1 for
+   text, 3:1 for borders and focus rings) - the lesson from Cadence's audit.
+   Change a color here and npm run verify tells you if it still passes. */
 :root {
-  font-family: system-ui, sans-serif;
+  --paper: #f7f5f0;        /* page background */
+  --white: #ffffff;        /* boxes and cards */
+  --ink: #1f2328;          /* main text */
+  --ink-soft: #4b5058;     /* hints and small print */
+  --accent: #1d5c57;       /* links, buttons, focus ring */
+  --accent-dark: #123f3b;  /* hover */
+  --accent-tint: #e3eeea;  /* the "$50 extra" column */
+  --line-strong: #767b83;  /* input borders - must reach 3:1 */
+  --line: #c9ccd0;         /* card outlines (decoration only) */
+  --line-soft: #dee0e3;    /* rows inside cards (decoration only) */
+  --error: #b3261e;
+
+  --font-body: 'Public Sans', system-ui, sans-serif;
+  --font-display: 'Source Serif 4', Georgia, serif;
+  --radius: 10px;
+
+  font-family: var(--font-body);
   line-height: 1.5;
-  color: #1a1a1a;
-  background: #ffffff;
+  color: var(--ink);
+  background: var(--paper);
 }
 
+body {
+  margin: 0;
+  background: var(--paper);
+}
+
+/* One calm column: phone width first, and no wider than is easy to read. */
 main {
-  max-width: 40rem;
+  max-width: 34rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1rem 1.25rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Visible focus everywhere, never removed. */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+/* Headings get focus from code when a new screen appears (so screen readers
+   start reading there); they're not something people tab to. */
+h1[tabindex='-1']:focus {
+  outline: none;
+}
+
+a {
+  color: var(--accent);
+}
+a:hover {
+  color: var(--accent-dark);
+}
+
+p, h1, h2, ul, dl, dd {
+  margin: 0;
+}
+
+/* ---- Text ---- */
+
+.screen-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.eyebrow {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+h1 {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  line-height: 1.2;
+  font-weight: 600;
+}
+h2 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.lead {
+  font-size: 1.1rem;
+}
+.intro {
+  font-size: 1.06rem;
+  color: var(--ink-soft);
+}
+.small {
+  font-size: 0.94rem;
+  color: var(--ink-soft);
+}
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 1.06rem;
+  line-height: 1.55;
+}
+.section ul {
+  padding-left: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* ---- Links and buttons ---- */
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.back:hover {
+  color: var(--accent-dark);
+}
+
+.button {
+  min-height: 56px;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--white);
+  font: inherit;
+  font-size: 1.12rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.button:hover {
+  background: var(--accent-dark);
+}
+.button-quiet {
+  min-height: 52px;
+  padding: 0 1.1rem;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.button-quiet:hover {
+  background: var(--accent-tint);
+}
+
+/* ---- Start: the two answers ---- */
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 76px;
+  padding: 0.9rem 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.choice:hover {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+}
+.choice-text {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.choice-title {
+  font-size: 1.06rem;
+  font-weight: 600;
+}
+.choice-sub {
+  font-size: 0.94rem;
+  color: var(--ink-soft);
+}
+
+/* ---- The form ---- */
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.label {
+  padding: 0;
+  font-size: 1.06rem;
+  font-weight: 600;
+}
+.sublabel {
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+.hint {
+  font-size: 0.94rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.note {
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--error);
+}
+.error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* The box draws the border, so the $ or % can sit inside it. */
+.box {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 52px;
+  box-sizing: border-box;
+  margin-top: 0.25rem;
+  padding: 0 0.9rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.box:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.box-error {
+  border: 3px solid var(--error);
+}
+.box input {
+  flex-grow: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 1.12rem;
+  color: var(--ink);
+}
+.box input:focus {
+  outline: none; /* the box shows focus instead */
+}
+.affix {
+  font-size: 1.06rem;
+  color: var(--ink-soft);
+}
+
+.date-row {
+  display: flex;
+  gap: 0.75rem;
+}
+.date-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.date-month {
+  flex-grow: 1;
+}
+.date-year {
+  width: 7rem;
+}
+/* A legend doesn't take part in the fieldset's gap, so it gets its own space. */
+legend.label {
+  margin-bottom: 0.4rem;
+}
+select {
+  height: 52px;
+  margin-top: 0.25rem;
+  padding: 0 0.75rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--white);
+  font: inherit;
+  font-size: 1.12rem;
+  color: var(--ink);
+}
+select.select-error {
+  border: 3px solid var(--error);
+}
+
+/* "5 payments is less than a year..." */
+.check {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+  padding: 0.9rem 1rem;
+  border: 2px solid var(--error);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.check p {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.check svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--error);
+}
+.check .button-quiet {
+  align-self: flex-start;
+}
+
+/* The list of things to fix, at the top. */
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 3px solid var(--error);
+  border-radius: 12px;
+  background: var(--white);
+}
+.summary h2 {
+  font-size: 1.12rem;
+}
+.summary ul {
+  padding-left: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.summary a {
+  font-weight: 600;
+  color: var(--error);
+}
+
+/* ---- Results ---- */
+
+.papers {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--white);
+}
+.papers > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+.papers > div:last-child {
+  border-bottom: 0;
+}
+.papers .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.papers dt {
+  font-weight: 600;
+}
+.papers dd {
+  font-weight: 700;
+}
+.papers p {
+  font-size: 0.94rem;
+  color: var(--ink-soft);
+}
+.papers strong {
+  color: var(--ink);
+}
+
+.extra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.25rem 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  background: var(--white);
+  font-size: 1.06rem;
+}
+.extra h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 600;
+}
+.extra table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.extra th,
+.extra td {
+  padding: 0.75rem 0.4rem;
+  text-align: right;
+  border-bottom: 1px solid var(--line-soft);
+}
+.extra tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.extra th[scope='row'] {
+  padding-left: 0;
+  text-align: left;
+  font-weight: 600;
+}
+.extra thead th {
+  vertical-align: bottom;
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.extra .plus {
+  padding-right: 0.5rem;
+  background: var(--accent-tint);
+  font-weight: 700;
+}
+.extra thead .plus {
+  color: var(--accent);
+  border-radius: 8px 8px 0 0;
+}
+.extra tbody tr:last-child .plus {
+  border-radius: 0 0 8px 8px;
+}
+
+/* Read by screen readers, not shown. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

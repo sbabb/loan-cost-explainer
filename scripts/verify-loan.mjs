@@ -24,6 +24,8 @@ check('$1,200 at 0% for 12 months', monthlyPayment(120000, 0, 12), 10000)
 // Total interest worked out by hand: 59 x $193.33 plus the final payment.
 const example = explainLoan({ amountCents: 1000000, yearlyRatePercent: 6, termMonths: 60, extraCents: 5000 })
 check('example: payoff months', example.asAgreed.months, 60)
+// $10,000 x 6% / 12 = $50.00 of the first payment is interest.
+check('example: first payment interest', example.firstInterest, 5000)
 check('example: total paid = amount + interest',
   example.asAgreed.totalPaid, 1000000 + example.asAgreed.totalInterest)
 checkTrue('example: total interest near $1,599.68 (formula, before rounding)',
@@ -31,7 +33,18 @@ checkTrue('example: total interest near $1,599.68 (formula, before rounding)',
 checkTrue('example: extra $50 pays off sooner', example.withExtra.months < 60)
 checkTrue('example: extra $50 saves interest', example.interestSaved > 0)
 
-// 3. The rules every loan must follow, tried on 5,000 random loans.
+// 3. The loan on the design canvases, to the cent: $25,000 at 6.49% for 60
+// months. If any of these change, the screens' worked example is wrong too.
+const member = explainLoan({ amountCents: 2500000, yearlyRatePercent: 6.49, termMonths: 60, extraCents: 5000 })
+check('member: payment', member.payment, 48904)
+check('member: final payment', member.asAgreed.lastPayment, 48882)
+check('member: interest', member.asAgreed.totalInterest, 434218)
+check('member: first payment interest', member.firstInterest, 13521)
+check('member: with $50, payments', member.withExtra.months, 54)
+check('member: with $50, interest', member.withExtra.totalInterest, 386149)
+check('member: with $50, saved', member.interestSaved, 48069)
+
+// 4. The rules every loan must follow, tried on 5,000 random loans.
 // A simple repeatable random generator, so a failure can be reproduced.
 let seed = 42
 function random() {
