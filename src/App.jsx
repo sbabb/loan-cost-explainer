@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import StartScreen from './StartScreen.jsx'
 import LoanForm from './LoanForm.jsx'
 import Results from './Results.jsx'
+import LookSwitch from './LookSwitch.jsx'
 
 const EMPTY = { amount: '', rate: '', term: '', month: '', year: '' }
 
@@ -57,12 +58,11 @@ export default function App() {
     document.querySelector('h1')?.focus()
   }, [screen])
 
+  let content
   if (screen === 'start') {
-    return <StartScreen onChoose={(answer) => goTo('inputs', answer)} />
-  }
-
-  if (screen === 'inputs') {
-    return (
+    content = <StartScreen onChoose={(answer) => goTo('inputs', answer)} />
+  } else if (screen === 'inputs') {
+    content = (
       <LoanForm
         key={hasIt ? 'have' : 'deciding'}
         hasIt={hasIt}
@@ -76,19 +76,26 @@ export default function App() {
         today={new Date()}
       />
     )
+  } else {
+    content = (
+      <Results
+        loan={loan}
+        hasIt={hasIt}
+        today={new Date()}
+        onChangeNumbers={() => window.history.back()}
+        onStartOver={() => {
+          setValues(EMPTY)
+          setLoan(null)
+          goTo('start', hasIt)
+        }}
+      />
+    )
   }
 
   return (
-    <Results
-      loan={loan}
-      hasIt={hasIt}
-      today={new Date()}
-      onChangeNumbers={() => window.history.back()}
-      onStartOver={() => {
-        setValues(EMPTY)
-        setLoan(null)
-        goTo('start', hasIt)
-      }}
-    />
+    <>
+      <LookSwitch />
+      {content}
+    </>
   )
 }

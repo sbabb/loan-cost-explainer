@@ -2,7 +2,7 @@
 
 Portfolio piece 2 of 3 for Steven's move into product design (target: portfolio
 ready ~March 2027). The notes live in the Obsidian vault at
-`~/Projects/Career_Transition/Notes/02 Portfolio/Loan Cost Explainer.md`.
+`~/Projects/Career_Transition/Notes/Career Transition/02 Portfolio/Loan Cost Explainer.md`.
 
 ## What it is
 Input a loan's amount, rate and term → a plain-language explanation of what it

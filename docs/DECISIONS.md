@@ -91,3 +91,30 @@ Pressing Explain again with the same number carries on.
 **Why:** loans are talked about in years and papers count months. It's the
 mistake most likely to produce a confidently wrong answer.
 **Rejected:** blocking anything under 12 (short loans exist); saying nothing.
+
+## 2026-10-04 - Three looks, to test whether style changes trust
+The same screens, words and numbers in three looks: **Calm** (the original),
+**Terminal** (Cadence's look: monospace, sharp corners, Tokyo Night / Catppuccin
+Latte) and **Modern** (benchmarked on Stripe, Mercury and Linear: Geist,
+indigo, soft shadows, rounded cards). A small "Look" switch sits at the top,
+and a link like `?look=terminal` opens one directly for a research session.
+**Why:** the research question is whether how a money tool looks changes
+whether members trust the numbers. Only the look changes, so any difference
+in what members say comes from the look. It also shows range.
+**Rejected:** the latest macOS as the benchmark (its glass style struggles
+with contrast over busy backgrounds, wrong for an accessible numbers tool); a
+Linux-styled look (that's what Terminal already is); Windows 11.
+**How:** every color, font, corner and shadow is a token in `src/looks.css`;
+the screens never pick their own. `npm run verify` checks contrast in all
+three looks, light and dark.
+**Open question:** the switch is always visible, which suits a portfolio demo
+and research sessions but not a real member. Decide before the case study
+whether it stays, or only appears when the link names a look (`?look=`).
+
+## 2026-10-04 - Dark mode follows the device, no switch for it
+Each look has a light and a dark version, chosen by the phone or computer's
+own setting.
+**Why:** someone checking their loan at night in dark mode shouldn't get a
+white page, and nobody looks for a setting in a tool they use once.
+**Rejected:** a light/dark toggle. (The Look switch is different: it's there
+for the research comparison, not as a preference.)

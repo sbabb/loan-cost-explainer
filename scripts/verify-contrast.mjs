@@ -1,11 +1,19 @@
-// Checks every color pairing the app uses against WCAG 2.1 AA. It reads the
-// real tokens from src/index.css, so changing a color there and forgetting to
-// check it can't slip through. Run with: npm run verify:contrast
+// Checks every color pairing the app uses against WCAG 2.1 AA, in all three
+// looks and in both light and dark. It reads the real tokens from
+// src/looks.css (each block is marked "tokens: <look> <mode>"), so changing a
+// color there and forgetting to check it can't slip through.
+// Run with: npm run verify:contrast
 import { readFileSync } from 'node:fs'
 
-const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
-const tokens = {}
-for (const [, name, hex] of css.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})/gi)) tokens[name] = hex
+const css = readFileSync(new URL('../src/looks.css', import.meta.url), 'utf8')
+
+// Find each marked block and read its --name: #hex tokens.
+const sets = {}
+for (const [, name, body] of css.matchAll(/\/\* tokens: ([\w ]+?) \*\/[^{]*\{([^}]*)\}/g)) {
+  const tokens = {}
+  for (const [, token, hex] of body.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})\b/gi)) tokens[token] = hex
+  sets[name] = tokens
+}
 
 // The WCAG formula: how bright a color looks, then the ratio between two.
 function luminance(hex) {
@@ -25,35 +33,46 @@ const TEXT = 4.5
 const UI = 3
 const pairs = [
   ['ink', 'paper', TEXT, 'main text'],
-  ['ink', 'white', TEXT, 'text in boxes'],
+  ['ink', 'surface', TEXT, 'text in boxes'],
   ['ink', 'accent-tint', TEXT, 'the $50 extra column'],
   ['ink-soft', 'paper', TEXT, 'hints and small print'],
-  ['ink-soft', 'white', TEXT, 'hints in cards'],
+  ['ink-soft', 'surface', TEXT, 'hints in cards'],
   ['accent', 'paper', TEXT, 'links and eyebrows'],
-  ['accent', 'white', TEXT, 'quiet button text'],
-  ['accent', 'accent-tint', TEXT, 'the $50 extra heading'],
+  ['accent', 'surface', TEXT, 'quiet button text'],
+  ['accent', 'accent-tint', TEXT, 'the $50 extra heading, eyebrow pill'],
   ['accent-dark', 'paper', TEXT, 'link hover'],
-  ['white', 'accent', TEXT, 'main button'],
-  ['white', 'accent-dark', TEXT, 'main button hover'],
+  ['on-button', 'button', TEXT, 'main button'],
+  ['on-button', 'button-hover', TEXT, 'main button hover'],
   ['error', 'paper', TEXT, 'error messages'],
-  ['error', 'white', TEXT, 'error summary links'],
-  ['line-strong', 'white', UI, 'input borders'],
+  ['error', 'surface', TEXT, 'error summary links'],
+  ['line-strong', 'surface', UI, 'input borders'],
   ['line-strong', 'paper', UI, 'input borders against the page'],
   ['accent', 'paper', UI, 'focus ring'],
-  ['error', 'white', UI, 'error borders'],
+  ['button', 'paper', UI, 'main button edge'],
+  ['error', 'surface', UI, 'error borders'],
 ]
 
+const expected = ['calm', 'terminal', 'modern'].flatMap((look) => [`${look} light`, `${look} dark`])
 let failures = 0
-for (const [fg, bg, min, where] of pairs) {
-  if (!tokens[fg] || !tokens[bg]) {
+for (const name of expected) {
+  if (!sets[name]) {
     failures += 1
-    console.error(`FAIL ${where}: missing token --${tokens[fg] ? bg : fg}`)
-    continue
+    console.error(`FAIL: no "tokens: ${name}" block in src/looks.css`)
   }
-  const ratio = contrast(tokens[fg], tokens[bg])
-  if (ratio < min) {
-    failures += 1
-    console.error(`FAIL ${where}: --${fg} on --${bg} is ${ratio.toFixed(2)}:1, needs ${min}:1`)
+}
+
+for (const [name, tokens] of Object.entries(sets)) {
+  for (const [fg, bg, min, where] of pairs) {
+    if (!tokens[fg] || !tokens[bg]) {
+      failures += 1
+      console.error(`FAIL ${name}, ${where}: missing --${tokens[fg] ? bg : fg}`)
+      continue
+    }
+    const ratio = contrast(tokens[fg], tokens[bg])
+    if (ratio < min) {
+      failures += 1
+      console.error(`FAIL ${name}, ${where}: --${fg} on --${bg} is ${ratio.toFixed(2)}:1, needs ${min}:1`)
+    }
   }
 }
 
@@ -61,4 +80,4 @@ if (failures > 0) {
   console.error(`\n${failures} contrast check(s) failed.`)
   process.exit(1)
 }
-console.log(`Contrast verified: ${pairs.length} color pairs meet WCAG 2.1 AA.`)
+console.log(`Contrast verified: ${pairs.length} color pairs in ${Object.keys(sets).length} looks meet WCAG 2.1 AA.`)

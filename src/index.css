@@ -1,24 +1,7 @@
-/* Colors, type and spacing as named tokens. Every text/background pair is
-   checked against WCAG 2.1 AA by scripts/verify-contrast.mjs (4.5:1 for
-   text, 3:1 for borders and focus rings) - the lesson from Cadence's audit.
-   Change a color here and npm run verify tells you if it still passes. */
+/* Layout and components. Every color, font, corner and shadow comes from
+   a token in src/looks.css - nothing here picks its own - which is what lets
+   one set of screens wear three looks, light and dark. */
 :root {
-  --paper: #f7f5f0;        /* page background */
-  --white: #ffffff;        /* boxes and cards */
-  --ink: #1f2328;          /* main text */
-  --ink-soft: #4b5058;     /* hints and small print */
-  --accent: #1d5c57;       /* links, buttons, focus ring */
-  --accent-dark: #123f3b;  /* hover */
-  --accent-tint: #e3eeea;  /* the "$50 extra" column */
-  --line-strong: #767b83;  /* input borders - must reach 3:1 */
-  --line: #c9ccd0;         /* card outlines (decoration only) */
-  --line-soft: #dee0e3;    /* rows inside cards (decoration only) */
-  --error: #b3261e;
-
-  --font-body: 'Public Sans', system-ui, sans-serif;
-  --font-display: 'Source Serif 4', Georgia, serif;
-  --radius: 10px;
-
   font-family: var(--font-body);
   line-height: 1.5;
   color: var(--ink);
@@ -78,7 +61,8 @@ h1 {
   font-family: var(--font-display);
   font-size: 1.9rem;
   line-height: 1.2;
-  font-weight: 600;
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
 }
 h2 {
   font-size: 1.25rem;
@@ -135,23 +119,23 @@ h2 {
   min-height: 56px;
   padding: 0 1.25rem;
   border: 0;
-  border-radius: var(--radius);
-  background: var(--accent);
-  color: var(--white);
+  border-radius: var(--radius-button);
+  background: var(--button);
+  color: var(--on-button);
   font: inherit;
   font-size: 1.12rem;
   font-weight: 600;
   cursor: pointer;
 }
 .button:hover {
-  background: var(--accent-dark);
+  background: var(--button-hover);
 }
 .button-quiet {
   min-height: 52px;
   padding: 0 1.1rem;
   border: 2px solid var(--accent);
-  border-radius: var(--radius);
-  background: var(--white);
+  border-radius: var(--radius-button);
+  background: var(--surface);
   color: var(--accent);
   font: inherit;
   font-weight: 600;
@@ -175,8 +159,9 @@ h2 {
   min-height: 76px;
   padding: 0.9rem 1rem;
   border: 2px solid var(--line-strong);
-  border-radius: 12px;
-  background: var(--white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow);
+  background: var(--surface);
   color: var(--ink);
   font: inherit;
   text-align: left;
@@ -260,7 +245,7 @@ form {
   padding: 0 0.9rem;
   border: 2px solid var(--line-strong);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface);
 }
 .box:focus-within {
   outline: 3px solid var(--accent);
@@ -313,7 +298,7 @@ select {
   padding: 0 0.75rem;
   border: 2px solid var(--line-strong);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface);
   font: inherit;
   font-size: 1.12rem;
   color: var(--ink);
@@ -331,7 +316,7 @@ select.select-error {
   padding: 0.9rem 1rem;
   border: 2px solid var(--error);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface);
 }
 .check p {
   display: flex;
@@ -354,8 +339,9 @@ select.select-error {
   gap: 0.5rem;
   padding: 1rem;
   border: 3px solid var(--error);
-  border-radius: 12px;
-  background: var(--white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow);
+  background: var(--surface);
 }
 .summary h2 {
   font-size: 1.12rem;
@@ -377,8 +363,9 @@ select.select-error {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow);
+  background: var(--surface);
 }
 .papers > div {
   display: flex;
@@ -415,15 +402,16 @@ select.select-error {
   gap: 0.9rem;
   padding: 1.25rem 1rem;
   border: 2px solid var(--accent);
-  border-radius: 14px;
-  background: var(--white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow);
+  background: var(--surface);
   font-size: 1.06rem;
 }
 .extra h2 {
   font-family: var(--font-display);
   font-size: 1.5rem;
   line-height: 1.25;
-  font-weight: 600;
+  font-weight: var(--display-weight);
 }
 .extra table {
   width: 100%;
@@ -458,10 +446,10 @@ select.select-error {
 }
 .extra thead .plus {
   color: var(--accent);
-  border-radius: 8px 8px 0 0;
+  border-radius: min(8px, var(--radius-card)) min(8px, var(--radius-card)) 0 0;
 }
 .extra tbody tr:last-child .plus {
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 min(8px, var(--radius-card)) min(8px, var(--radius-card));
 }
 
 /* Read by screen readers, not shown. */
@@ -472,4 +460,42 @@ select.select-error {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* ---- The look switch ---- */
+
+.lookbar {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+.lookbar-buttons {
+  display: flex;
+  gap: 0.25rem;
+}
+.look-button {
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  cursor: pointer;
+}
+.look-button:hover {
+  color: var(--ink);
+  border-color: var(--line);
+}
+.look-button[aria-pressed='true'] {
+  border-color: var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
 }
