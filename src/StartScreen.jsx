@@ -14,7 +14,7 @@ export default function StartScreen({ onChoose }) {
     <main>
       <header className="screen-head">
         <p className="eyebrow">Plain words, real numbers</p>
-        <h1 tabIndex={-1}>What does this loan really cost?</h1>
+        <h1 tabIndex={-1}>What does this loan <em>really</em> cost?</h1>
         <p className="intro">
           The total cost in plain words, when it’ll be paid off, and what an extra $50 a month would change.
         </p>

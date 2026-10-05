@@ -4,8 +4,9 @@
 
    Benchmarked on the modern money products: Stripe, Mercury, Linear. Cool
    near-white paper with a soft indigo glow at the top, white cards with
-   layered shadows, Geist type, one indigo accent, and a dark "statement"
-   card for the answer.
+   layered shadows, an editorial serif for headlines over Geist for
+   everything else, one indigo accent, and a dark "statement" card for the
+   answer.
 
    Light or dark follows the device setting automatically. Every color pair
    is checked against WCAG 2.1 AA by scripts/verify-contrast.mjs, which finds
@@ -92,6 +93,8 @@
 
 :root {
   --font-body: 'Geist Sans', system-ui, sans-serif;
+  /* Headlines only. Numbers stay in Geist - money reads best in the sans. */
+  --font-display: 'Instrument Serif', Georgia, serif;
   --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
   --radius: 12px;
   --radius-card: 20px;

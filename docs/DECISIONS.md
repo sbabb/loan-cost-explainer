@@ -195,3 +195,26 @@ dark, including text over the answer card's glow.
 **Rejected:** keeping three looks for a trust test - one strong look serves
 the case study better than three diluted ones; glass/blur effects (contrast
 over busy backgrounds); a chart library (a few divs do it, nothing to load).
+
+## 2026-10-05 - "Finance beautiful": serif headlines, a statement card, a timeline
+Pushed Modern further, on Steven's ask:
+- **Instrument Serif for headlines** ("What does this loan *really* cost?"),
+  Geist for everything you read or count. Money is never in the serif.
+- **Money set like a finance app:** "$4,342" large, ".18" small and raised.
+- **The answer card** gained depth: layered indigo/violet/teal light, fine
+  graph-paper lines fading from one corner, a whisper of grain.
+- **A payment timeline** across the whole loan: each payment split into
+  interest and what pays down the loan, interest visibly shrinking. Drag or
+  tap to read any month; on a keyboard it's a slider (arrows, Page Up/Down,
+  Home/End) and a screen reader hears the same readout.
+- **Numbered sections** (01, 02...) and mono labels, like a statement.
+- **A new mark:** two discs - what you borrowed (indigo) with the interest
+  peeking out behind it (lavender). Also the browser tab icon.
+- **No tap flash:** the phone's square tap highlight is off; controls have
+  their own rounded pressed states, and the Months/Years ring shows for
+  keyboard focus only.
+**Why:** a money tool people trust can still be a pleasure to use; the
+timeline is the clearest picture of how a loan works.
+**Rejected:** a serif for the numbers (money reads best in the sans - and
+the dataviz guidance says the same for hero figures); the rising-bars mark
+(read like a generic chart emoji).

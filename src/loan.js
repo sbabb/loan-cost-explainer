@@ -23,12 +23,15 @@ export function monthlyPayment(amountCents, yearlyRatePercent, months) {
 // Because the payment is rounded to the cent, a few cents are left over (or
 // overpaid) by the end - the final payment settles that, like a real loan.
 // `termMonths` is the original term: that month is always the last one.
+// `schedule` keeps every month - how each payment splits between interest
+// and the loan itself - for the payment timeline chart.
 function payOff(amountCents, yearlyRatePercent, termMonths, paymentCents) {
   const monthlyRate = yearlyRatePercent / 100 / 12
   let balance = amountCents
   let months = 0
   let totalInterest = 0
   let lastPayment = 0
+  const schedule = []
 
   while (balance > 0) {
     months += 1
@@ -40,9 +43,10 @@ function payOff(amountCents, yearlyRatePercent, termMonths, paymentCents) {
     totalInterest += interest
     balance = owed - payment
     lastPayment = payment
+    schedule.push({ payment, interest, toLoan: payment - interest, balance })
   }
 
-  return { months, totalInterest, totalPaid: amountCents + totalInterest, lastPayment }
+  return { months, totalInterest, totalPaid: amountCents + totalInterest, lastPayment, schedule }
 }
 
 // Everything the explanation needs for one loan.

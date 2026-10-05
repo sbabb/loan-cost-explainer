@@ -43,6 +43,8 @@ check('member: first payment interest', member.firstInterest, 13521)
 check('member: with $50, payments', member.withExtra.months, 54)
 check('member: with $50, interest', member.withExtra.totalInterest, 386149)
 check('member: with $50, saved', member.interestSaved, 48069)
+check('member: month 1 split', JSON.stringify(member.asAgreed.schedule[0]),
+  JSON.stringify({ payment: 48904, interest: 13521, toLoan: 35383, balance: 2464617 }))
 
 // 4. The rules every loan must follow, tried on 5,000 random loans.
 // A simple repeatable random generator, so a failure can be reproduced.
@@ -90,6 +92,12 @@ for (let i = 0; i < 5000; i += 1) {
   // Paying extra never costs more or takes longer.
   checkTrue(`${name} extra takes longer`, withExtra.months <= asAgreed.months)
   checkTrue(`${name} extra costs more`, withExtra.totalInterest <= asAgreed.totalInterest)
+  // The month-by-month schedule adds up to the totals, exactly.
+  const rows = asAgreed.schedule
+  check(`${name} schedule length`, rows.length, asAgreed.months)
+  check(`${name} schedule interest`, rows.reduce((sum, row) => sum + row.interest, 0), asAgreed.totalInterest)
+  check(`${name} schedule pays the loan`, rows.reduce((sum, row) => sum + row.toLoan, 0), loan.amountCents)
+  check(`${name} schedule ends at zero`, rows[rows.length - 1].balance, 0)
   // No interest means nothing to save.
   if (loan.yearlyRatePercent === 0) check(`${name} 0% interest`, asAgreed.totalInterest, 0)
 }

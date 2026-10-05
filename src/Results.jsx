@@ -1,14 +1,11 @@
 import { explainLoan } from './loan.js'
 import { addMonths, duration, money, monthYear, nextMonth, shortMonthYear } from './format.js'
 import { BackIcon } from './Icons.jsx'
-import { CostBar, CostRows, Legend } from './Charts.jsx'
+import { CostBar, CostRows, HeroAmount, Legend } from './Charts.jsx'
+import Timeline from './Timeline.jsx'
 import { useCountUp } from './useCountUp.js'
 
 export const EXTRA_CENTS = 5000 // the "$50 more a month"
-
-// "$4,342.18" while counting, so the number doesn't jump between "$4,342"
-// and "$4,342.07" as it climbs.
-const exact = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 
 // Screen 3: the explanation. Every number comes from explainLoan(), which
 // scripts/verify-loan.mjs checks; this file only puts them into words and
@@ -38,6 +35,10 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
   const firstPayment = count === 1 ? asAgreed.lastPayment : payment
   const firstToLoan = firstPayment - firstInterest
 
+  // The cards are numbered 01, 02, ... like the sections of a statement.
+  let section = 0
+  const number = () => <span className="index" aria-hidden="true">{String(++section).padStart(2, '0')}</span>
+
   const headline = interest > 0
     ? say(`This loan will cost you ${money(interest)} in interest.`,
       `This loan would cost you ${money(interest)} in interest.`)
@@ -57,7 +58,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
           <span className="visually-hidden">{headline}</span>
           <span className="hero-lines" aria-hidden="true">
             <span className="hero-lead">{say('This loan will cost you', 'This loan would cost you')}</span>
-            <span className="hero-figure">{shown === interest ? money(interest) : exact.format(shown / 100)}</span>
+            <span className="hero-figure"><HeroAmount cents={shown} final={interest} /></span>
             <span className="hero-lead">in interest.</span>
           </span>
         </h1>
@@ -81,7 +82,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
       </section>
 
       <section className="card" aria-labelledby="payments">
-        <h2 id="payments">Your payments</h2>
+        <h2 id="payments">{number()}Your payments</h2>
         <dl className="stats">
           <div>
             <dt>Each month</dt>
@@ -112,7 +113,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
       </section>
 
       <section className="card" aria-labelledby="first">
-        <h2 id="first">{say('Where your first payment goes', 'Where your first payment would go')}</h2>
+        <h2 id="first">{number()}{say('Where your payments go', 'Where your payments would go')}</h2>
         {firstInterest > 0 ? (
           <>
             <p>
@@ -121,18 +122,15 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
               <>Of your first {money(firstPayment)}, <strong>{money(firstInterest)} would pay interest</strong> and{' '}
                 {money(firstToLoan)} would pay down what you owe.</>)}
             </p>
-            <CostBar borrowed={firstToLoan} interest={firstInterest} />
-            <Legend
-              items={[
-                { label: 'Pays down the loan', value: money(firstToLoan) },
-                { label: 'Pays interest', value: money(firstInterest), interest: true },
-              ]}
-            />
             {count > 1 && (
-              <p>
-                Every month after that, a little less goes to interest and a little more goes to the loan,
-                because you owe less each time.
-              </p>
+              <>
+                <p>
+                  Every month after that, a little less goes to interest and a little more goes to the loan,
+                  because you owe less each time.
+                </p>
+                <Timeline schedule={asAgreed.schedule} first={first} />
+                <p className="small">Drag across the chart to see any payment.</p>
+              </>
             )}
           </>
         ) : (
@@ -145,7 +143,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
 
       {hasIt && (
         <section className="card" aria-labelledby="papers">
-          <h2 id="papers">Match it to your loan papers</h2>
+          <h2 id="papers">{number()}Match it to your loan papers</h2>
           <p>Your loan papers use different names for the same numbers.</p>
           <dl className="papers">
             <PaperRow name="What you borrowed" value={money(borrowed)} paperName="Amount Financed" />
@@ -157,8 +155,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
       )}
 
       <section className="card card-accent" aria-labelledby="extra">
-        <p className="eyebrow">What if</p>
-        <h2 id="extra">You paid $50 more a month?</h2>
+        <h2 id="extra">{number()}What if you paid $50 more a month?</h2>
         <p>{extraSummary(monthsSaved, interestSaved)}</p>
         <CostRows
           rows={[
@@ -211,7 +208,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
 
       {!hasIt && (
         <section className="card before" aria-labelledby="before">
-          <h2 id="before">Before you sign</h2>
+          <h2 id="before">{number()}Before you sign</h2>
           <ul>
             <li>A lower monthly payment isn’t always cheaper. A longer loan usually means more interest in total.</li>
             <li>Ask for the Truth in Lending Disclosure. These same numbers will be on it.</li>

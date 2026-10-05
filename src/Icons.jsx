@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 // The small icons the app uses, drawn inline so they take the text color.
 // All are decoration: the words next to them carry the meaning.
 const stroke = {
@@ -68,13 +70,28 @@ export function CompareIcon() {
   )
 }
 
-// The brand mark: three rising bars.
-export function MarkIcon() {
+// The brand mark: two discs. The indigo one in front is what you borrowed;
+// the lavender crescent peeking out behind it is the interest you pay on top
+// - the whole product in one shape, and the same split as the cost bars.
+// The gap between them is cut out (a mask), so it works on any background.
+// public/favicon.svg is the same drawing.
+export function Mark({ size = 28 }) {
+  // React's ids contain characters an SVG url(#...) can trip over; keep it plain.
+  const id = `mark${useId().replace(/[^a-zA-Z0-9]/g, '')}`
   return (
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-      <rect x="1.5" y="9" width="3" height="5.5" rx="1.2" />
-      <rect x="6.5" y="5.5" width="3" height="9" rx="1.2" />
-      <rect x="11.5" y="1.5" width="3" height="13" rx="1.2" />
+    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 32 32">
+      <defs>
+        <linearGradient id={`${id}-front`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#6d6ff5" />
+          <stop offset="1" stopColor="#3730a3" />
+        </linearGradient>
+        <mask id={`${id}-gap`}>
+          <rect width="32" height="32" fill="#fff" />
+          <circle cx="13.5" cy="16" r="12.6" fill="#000" />
+        </mask>
+      </defs>
+      <circle cx="19.5" cy="16" r="11" fill="#a5b4fc" mask={`url(#${id}-gap)`} />
+      <circle cx="13.5" cy="16" r="11" fill={`url(#${id}-front)`} />
     </svg>
   )
 }

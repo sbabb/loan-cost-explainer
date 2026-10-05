@@ -1,5 +1,21 @@
 import { money } from './format.js'
 
+const exact = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+
+// A big money figure set the way finance apps set it: dollars large, cents
+// small and raised. While it counts up (`cents` still climbing toward
+// `final`) it always shows cents, so the width doesn't jump.
+export function HeroAmount({ cents, final }) {
+  const text = cents === final ? money(final) : exact.format(cents / 100)
+  const [, whole, fraction = ''] = /^(.*?)(\.\d+)?$/.exec(text)
+  return (
+    <>
+      {whole}
+      {fraction && <span className="cents">{fraction}</span>}
+    </>
+  )
+}
+
 // The money pictures. One idea everywhere: a bar that is what you borrowed
 // (quiet grey) plus the interest on top (indigo). Interest is the story, so
 // it gets the color; the rest is context.

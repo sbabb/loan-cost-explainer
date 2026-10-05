@@ -1,4 +1,4 @@
-import { MarkIcon } from './Icons.jsx'
+import { Mark } from './Icons.jsx'
 
 // The top of every screen: the name, and where you are in the three steps
 // (choose -> enter the numbers -> the answer).
@@ -6,7 +6,7 @@ export default function Header({ step }) {
   return (
     <header className="site-header">
       <span className="brand">
-        <span className="mark"><MarkIcon /></span>
+        <Mark />
         Loan Cost Explainer
       </span>
       <p className="steps">

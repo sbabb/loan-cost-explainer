@@ -1,10 +1,8 @@
 import { compareOffers } from './compareLoans.js'
 import { duration, money } from './format.js'
 import { BackIcon, InfoIcon } from './Icons.jsx'
-import { CostRows } from './Charts.jsx'
+import { CostRows, HeroAmount } from './Charts.jsx'
 import { useCountUp } from './useCountUp.js'
-
-const exact = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 
 // The comparison: which offer costs less, by how much and why, then both side
 // by side. Every number and sentence comes from compareOffers(), which
@@ -41,8 +39,8 @@ export default function CompareResults({ offers, onChangeOffers, onStartOver }) 
               {cheaper === null ? 'Both offers would cost you' : `${win.name} would cost you`}
             </span>
             <span className="hero-figure">
-              {shown === figure ? money(figure) : exact.format(shown / 100)}
-              {cheaper !== null && ' less'}
+              <HeroAmount cents={shown} final={figure} />
+              {cheaper !== null && <span className="figure-word"> less</span>}
             </span>
             <span className="hero-lead">in interest.</span>
           </span>

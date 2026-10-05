@@ -7,8 +7,6 @@ here until the current piece ships, then gets weighed against the others.
   their own number, instead of a fixed $50.
 - **Installable on a phone** (2026-10-04). Same website, added to the home
   screen, works offline - the way Cadence does.
-- **A tab icon** (2026-10-04). There's a placeholder that stops the browser
-  asking for one.
 
 Moved into the build (see DECISIONS.md): automatic dark mode and comparing
 two offers (2026-10-04). The three looks were built, then narrowed to Modern
