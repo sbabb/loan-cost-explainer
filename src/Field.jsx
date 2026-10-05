@@ -7,7 +7,7 @@ import { AlertIcon } from './Icons.jsx'
 // The hint and error are tied to the box with aria-describedby, so a screen
 // reader reads them out when the box gets focus.
 export default function Field({
-  id, label, hint, error, prefix, suffix, width, inputMode, value, onChange, describedBy = [], children,
+  id, label, hint, error, prefix, suffix, width, inputMode, maxLength, value, onChange, describedBy = [], children,
 }) {
   const described = [hint && `${id}-hint`, error && `${id}-error`, ...describedBy].filter(Boolean).join(' ')
 
@@ -27,6 +27,7 @@ export default function Field({
           id={id}
           type="text"
           inputMode={inputMode}
+          maxLength={maxLength}
           autoComplete="off"
           aria-invalid={error ? true : undefined}
           aria-describedby={described || undefined}

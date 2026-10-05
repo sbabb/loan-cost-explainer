@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import Field from './Field.jsx'
+import ErrorSummary from './ErrorSummary.jsx'
+import TermNote from './TermNote.jsx'
 import { AlertIcon, BackIcon } from './Icons.jsx'
 import { checkInputs, parseWhole } from './checkInputs.js'
-import { duration, MONTHS } from './format.js'
-
-const COUNT_WORDS = ['', 'One', 'Two', 'Three', 'Four', 'Five']
+import { MONTHS } from './format.js'
 
 // Screen 2: the loan's numbers. Worded for someone who already has the loan
 // (hasIt) or someone still deciding. The typed text lives in App, so it's
@@ -61,8 +61,6 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
   if (errors.month) problems.push({ id: 'month', text: errors.month })
   if (errors.year) problems.push({ id: 'year', text: errors.year })
 
-  const term = parseWhole(values.term)
-  const termNote = term && !errors.term && !termCheck ? `That’s ${duration(term)} of monthly payments.` : ''
 
   return (
     <main>
@@ -81,29 +79,7 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
         </p>
       </header>
 
-      {problems.length > 0 && (
-        <div className="summary" ref={summaryRef} tabIndex={-1} aria-labelledby="summary-title">
-          <h2 id="summary-title">
-            {problems.length < COUNT_WORDS.length ? COUNT_WORDS[problems.length] : problems.length}{' '}
-            {problems.length === 1 ? 'thing' : 'things'} to check
-          </h2>
-          <ul>
-            {problems.map((problem) => (
-              <li key={problem.text}>
-                <a
-                  href={`#${problem.id}`}
-                  onClick={(event) => {
-                    event.preventDefault()
-                    document.getElementById(problem.id)?.focus()
-                  }}
-                >
-                  {problem.text}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <ErrorSummary problems={problems} ref={summaryRef} />
 
       <form onSubmit={handleSubmit} noValidate>
         <Field
@@ -147,24 +123,16 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
           onChange={(text) => update('term', text)}
           describedBy={[termCheck ? 'term-check' : 'term-note']}
         >
-          {termCheck ? (
-            <div className="check" id="term-check">
-              <p>
-                <AlertIcon />
-                <span>
-                  <strong>{termCheck.typed} {unit} is less than a year.</strong>{' '}
-                  {hasIt ? 'Payments are counted in months' : 'Lenders often say years'}, so{' '}
-                  {[8, 11].includes(termCheck.typed) ? 'an' : 'a'} {termCheck.typed}-year loan is{' '}
-                  {termCheck.asMonths} {unit}. If {termCheck.typed} is right, press “{cta}” again.
-                </span>
-              </p>
-              <button type="button" className="button-quiet" onClick={applySuggestedTerm}>
-                Change it to {termCheck.asMonths} {unit}
-              </button>
-            </div>
-          ) : (
-            <p id="term-note" className="note" aria-live="polite">{termNote}</p>
-          )}
+          <TermNote
+            id="term"
+            term={parseWhole(values.term)}
+            hasError={Boolean(errors.term)}
+            termCheck={termCheck}
+            unit={unit}
+            hasIt={hasIt}
+            cta={cta}
+            onApply={applySuggestedTerm}
+          />
         </Field>
 
         {hasIt && (

@@ -10,7 +10,7 @@ export const EXTRA_CENTS = 5000 // the "$50 more a month"
 // hasIt picks the wording: "you'll pay" for a loan they have, "you'd pay"
 // for one they're still deciding on. `say(mine, would)` keeps each pair of
 // sentences side by side so they can't drift apart.
-export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOver }) {
+export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOver, onCompare }) {
   const say = (mine, would) => (hasIt ? mine : would)
 
   const result = explainLoan({ ...loan, extraCents: EXTRA_CENTS })
@@ -158,14 +158,14 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
       </section>
 
       {!hasIt && (
-        <section className="section" aria-labelledby="before">
+        <section className="section before" aria-labelledby="before">
           <h2 id="before">Before you sign</h2>
           <ul>
             <li>A lower monthly payment isn’t always cheaper. A longer loan usually means more interest in total.</li>
-            <li>Comparing offers? Put each one through here and compare the interest. It’s the clearest way to see
-              which loan costs less.</li>
             <li>Ask for the Truth in Lending Disclosure. These same numbers will be on it.</li>
+            <li>Got another offer? Compare the two to see which costs less overall.</li>
           </ul>
+          <button type="button" className="button-quiet" onClick={onCompare}>Compare with another offer</button>
         </section>
       )}
 

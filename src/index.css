@@ -462,6 +462,35 @@ select.select-error {
   white-space: nowrap;
 }
 
+/* ---- Comparing two offers ---- */
+
+.offer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow);
+  background: var(--surface);
+}
+.callout {
+  padding: 0.9rem 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+.before .button-quiet {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+.badge {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
 /* ---- The look switch ---- */
 
 .lookbar {

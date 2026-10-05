@@ -2,17 +2,24 @@ import { useEffect, useRef, useState } from 'react'
 import StartScreen from './StartScreen.jsx'
 import LoanForm from './LoanForm.jsx'
 import Results from './Results.jsx'
+import CompareForm from './CompareForm.jsx'
+import CompareResults from './CompareResults.jsx'
 import LookSwitch from './LookSwitch.jsx'
 
 const EMPTY = { amount: '', rate: '', term: '', month: '', year: '' }
+const EMPTY_OFFER = { name: '', amount: '', rate: '', term: '' }
+const EMPTY_OFFERS = { a: EMPTY_OFFER, b: EMPTY_OFFER }
 
 const TITLES = {
   start: 'Loan Cost Explainer',
   inputs: 'Your loan’s numbers – Loan Cost Explainer',
   results: 'Your loan, explained – Loan Cost Explainer',
+  compare: 'Two offers – Loan Cost Explainer',
+  compareResults: 'Two offers compared – Loan Cost Explainer',
 }
 
-// The whole flow: start -> inputs -> results.
+// The whole flow: start -> inputs -> results, or start -> compare ->
+// compareResults. A "still deciding" result can also lead to compare.
 //
 // Each step is also a browser history entry, so the phone's back button goes
 // back one screen instead of leaving the site. history.state remembers the
@@ -23,6 +30,8 @@ export default function App() {
   const [hasIt, setHasIt] = useState(() => window.history.state?.hasIt ?? true)
   const [values, setValues] = useState(EMPTY)
   const [loan, setLoan] = useState(null)
+  const [offers, setOffers] = useState(EMPTY_OFFERS)
+  const [comparison, setComparison] = useState(null)
 
   useEffect(() => {
     if (!window.history.state) window.history.replaceState({ step: 'start', hasIt: true }, '')
@@ -42,7 +51,9 @@ export default function App() {
 
   // After a reload on the results screen the numbers are gone (they were
   // only ever in memory), so show the form to fill in again.
-  const screen = step === 'results' && !loan ? 'inputs' : step
+  let screen = step
+  if (step === 'results' && !loan) screen = 'inputs'
+  if (step === 'compareResults' && !comparison) screen = 'compare'
 
   // A new screen: start at the top, update the tab title, and move focus to
   // the heading so a screen reader announces where you are. Skipped on first
@@ -60,7 +71,14 @@ export default function App() {
 
   let content
   if (screen === 'start') {
-    content = <StartScreen onChoose={(answer) => goTo('inputs', answer)} />
+    content = (
+      <StartScreen
+        onChoose={(answer) => {
+          if (answer === 'compare') goTo('compare', hasIt)
+          else goTo('inputs', answer === 'have')
+        }}
+      />
+    )
   } else if (screen === 'inputs') {
     content = (
       <LoanForm
@@ -76,6 +94,32 @@ export default function App() {
         today={new Date()}
       />
     )
+  } else if (screen === 'compare') {
+    content = (
+      <CompareForm
+        offers={offers}
+        onChange={(letter, name, text) =>
+          setOffers((old) => ({ ...old, [letter]: { ...old[letter], [name]: text } }))}
+        onBack={() => window.history.back()}
+        onCompare={(checked) => {
+          setComparison(checked)
+          goTo('compareResults', hasIt)
+        }}
+        today={new Date()}
+      />
+    )
+  } else if (screen === 'compareResults') {
+    content = (
+      <CompareResults
+        offers={comparison}
+        onChangeOffers={() => window.history.back()}
+        onStartOver={() => {
+          setOffers(EMPTY_OFFERS)
+          setComparison(null)
+          goTo('start', hasIt)
+        }}
+      />
+    )
   } else {
     content = (
       <Results
@@ -87,6 +131,14 @@ export default function App() {
           setValues(EMPTY)
           setLoan(null)
           goTo('start', hasIt)
+        }}
+        onCompare={() => {
+          // The offer just explained becomes offer A; B starts empty.
+          setOffers((old) => ({
+            ...old,
+            a: { name: '', amount: values.amount, rate: values.rate, term: values.term },
+          }))
+          goTo('compare', hasIt)
         }}
       />
     )

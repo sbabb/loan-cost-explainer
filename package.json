@@ -8,9 +8,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "verify": "eslint . && node scripts/verify-loan.mjs && node scripts/verify-inputs.mjs && node scripts/verify-contrast.mjs",
+    "verify": "eslint . && node scripts/verify-loan.mjs && node scripts/verify-inputs.mjs && node scripts/verify-compare.mjs && node scripts/verify-contrast.mjs",
     "verify:loan": "node scripts/verify-loan.mjs",
     "verify:inputs": "node scripts/verify-inputs.mjs",
+    "verify:compare": "node scripts/verify-compare.mjs",
     "verify:contrast": "node scripts/verify-contrast.mjs"
   },
   "dependencies": {

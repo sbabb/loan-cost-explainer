@@ -118,3 +118,26 @@ own setting.
 white page, and nobody looks for a setting in a tool they use once.
 **Rejected:** a light/dark toggle. (The Look switch is different: it's there
 for the research comparison, not as a preference.)
+
+## 2026-10-04 - Compare two offers, and say plainly which costs less
+Two offers side by side. Reached two ways: a third answer on the start
+screen ("I'm comparing two offers") and a "Compare with another offer"
+button on a still-deciding result (that offer becomes offer A). The verdict
+is in the heading: "Credit union would cost you $480.64 less in interest."
+Then why ("It is paid off 1 year sooner, even though its rate is higher"),
+and **the catch** when the cheaper loan has the higher monthly payment.
+**Why:** the trap members fall into is the lower monthly payment - often a
+dealer's longer loan. In the test case the dealer has the lower rate *and*
+the lower payment, and still costs $480.64 more. Saying that out loud is
+the whole point. "Costs less" means less interest (the Finance Charge): it's
+the cost of borrowing even when the two offers lend different amounts.
+**Rejected:** up to three offers (three columns of money don't fit a phone);
+no verdict, just the facts (leaves members to untangle payment vs. cost);
+comparing total paid (unfair when the amounts differ).
+
+## 2026-10-04 - The first question becomes "Which sounds like you?"
+Three answers: "I already have this loan", "I'm thinking about a loan",
+"I'm comparing two offers".
+**Why:** "Do you already have this loan?" can't take a third answer.
+**Rejected:** keeping the yes/no question and hiding comparison on results
+only (you chose both ways in).
