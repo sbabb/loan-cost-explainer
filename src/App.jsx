@@ -35,6 +35,9 @@ export default function App() {
   const [loan, setLoan] = useState(null)
   const [offers, setOffers] = useState(EMPTY_OFFERS)
   const [comparison, setComparison] = useState(null)
+  // Loan A came from "I already have this loan" - the comparison says what
+  // that does and doesn't tell them.
+  const [fromExisting, setFromExisting] = useState(false)
 
   useEffect(() => {
     if (!window.history.state) window.history.replaceState({ step: 'start', hasIt: true }, '')
@@ -77,8 +80,12 @@ export default function App() {
     content = (
       <StartScreen
         onChoose={(answer) => {
-          if (answer === 'compare') goTo('compare', hasIt)
-          else goTo('inputs', answer === 'have')
+          if (answer === 'compare') {
+            setFromExisting(false)
+            goTo('compare', hasIt)
+          } else {
+            goTo('inputs', answer === 'have')
+          }
         }}
       />
     )
@@ -115,6 +122,7 @@ export default function App() {
     content = (
       <CompareResults
         offers={comparison}
+        fromExisting={fromExisting}
         onChangeOffers={() => window.history.back()}
         onStartOver={() => {
           setOffers(EMPTY_OFFERS)
@@ -136,11 +144,18 @@ export default function App() {
           goTo('start', hasIt)
         }}
         onCompare={() => {
-          // The offer just explained becomes offer A; B starts empty.
+          // The loan just explained is kept as loan A; B is the one to add.
           setOffers((old) => ({
             ...old,
-            a: { name: '', amount: values.amount, rate: values.rate, term: values.term, termUnit: values.termUnit },
+            a: {
+              name: hasIt ? 'Your loan' : '',
+              amount: values.amount,
+              rate: values.rate,
+              term: values.term,
+              termUnit: values.termUnit,
+            },
           }))
+          setFromExisting(hasIt)
           goTo('compare', hasIt)
         }}
       />

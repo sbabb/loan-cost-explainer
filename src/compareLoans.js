@@ -1,4 +1,5 @@
-// Comparing two loan offers, and saying plainly which costs less and why.
+// Comparing two loans - two offers, or one you have and one you're weighing -
+// and saying plainly which costs less and why.
 // No React here, so scripts/verify-compare.mjs can check the numbers and
 // every sentence.
 //
@@ -25,7 +26,7 @@ export function compareOffers(offers) {
     const result = explainLoan({ ...offer.loan, extraCents: 0 })
     return {
       ...offer,
-      name: offer.name.trim() || `Offer ${index === 0 ? 'A' : 'B'}`,
+      name: offer.name.trim() || `Loan ${index === 0 ? 'A' : 'B'}`,
       payment: result.payment,
       months: result.asAgreed.months,
       interest: result.asAgreed.totalInterest,
@@ -35,7 +36,7 @@ export function compareOffers(offers) {
 
   const amountsDiffer = a.loan.amountCents !== b.loan.amountCents
   const amountsNote = amountsDiffer
-    ? 'These offers lend different amounts, so this compares the interest: what each one costs you to borrow.'
+    ? 'These loans lend different amounts, so this compares the interest: what each one costs you to borrow.'
     : null
 
   if (a.interest === b.interest) {
@@ -43,8 +44,8 @@ export function compareOffers(offers) {
       offers: [a, b],
       cheaper: null,
       headline: a.interest === 0
-        ? 'Neither offer would cost you anything in interest.'
-        : `Both offers would cost you ${money(a.interest)} in interest.`,
+        ? 'Neither loan would cost you anything in interest.'
+        : `Both loans would cost you ${money(a.interest)} in interest.`,
       lead: a.payment === b.payment
         ? `They’d have the same monthly payment, ${money(a.payment)}.`
         : `${a.payment < b.payment ? a.name : b.name} has the lower monthly payment: ` +

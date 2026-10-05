@@ -128,10 +128,10 @@ main {
 /* Headlines in the editorial serif; everything you read or count in Geist. */
 h1 {
   font-family: var(--font-display);
-  font-size: 2.75rem;
-  line-height: 1.02;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-size: 2.45rem;
+  line-height: 1.08;
+  font-weight: 500;
+  letter-spacing: -0.025em;
 }
 h1 em {
   font-style: italic;
@@ -596,6 +596,21 @@ select.select-error {
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), var(--shadow-lift);
   overflow: hidden;
 }
+/* A fine stroke that catches the light: lavender at the top left, fading,
+   then teal at the bottom right. Drawn as a masked border so it can be a
+   gradient and still follow the rounded corners. */
+.statement > .stroke {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(140deg, rgb(199 210 254 / 0.75), rgb(165 180 252 / 0.12) 35%,
+    rgb(165 180 252 / 0.08) 65%, rgb(103 232 249 / 0.45));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
 /* Fine graph-paper lines, fading out from the top right, like a statement. */
 .statement::before {
   content: '';
@@ -631,8 +646,8 @@ select.select-error {
 }
 .hero-lead {
   font-family: var(--font-display);
-  font-size: 1.6rem;
-  line-height: 1.15;
+  font-size: 1.4rem;
+  line-height: 1.2;
   font-weight: 400;
   color: var(--hero-soft);
 }
@@ -846,15 +861,14 @@ select.select-error {
 }
 .area-loan {
   fill: var(--chart-borrowed);
-  opacity: 0.55;
 }
 .area-interest {
   fill: var(--chart-interest);
-  opacity: 0.22;
 }
+/* The 2px gap between the two areas, in the card's own color. */
 .line-split {
   fill: none;
-  stroke: var(--chart-interest);
+  stroke: var(--surface);
   stroke-width: 2;
   stroke-linejoin: round;
 }
@@ -862,10 +876,10 @@ select.select-error {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 1px;
-  margin-left: -0.5px;
-  background: var(--ink-soft);
-  opacity: 0.5;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--surface);
+  opacity: 0.9;
   pointer-events: none;
 }
 .dot {
@@ -874,7 +888,7 @@ select.select-error {
   height: 12px;
   margin: -6px 0 0 -6px;
   border-radius: 50%;
-  background: var(--chart-interest);
+  background: var(--ink);
   box-shadow: 0 0 0 2px var(--surface), 0 2px 8px rgb(16 18 40 / 0.25);
   pointer-events: none;
 }
@@ -885,15 +899,6 @@ select.select-error {
   font-size: 0.7rem;
   letter-spacing: 0.04em;
   color: var(--ink-soft);
-}
-
-/* The key matches the chart: soft washes, not solid blocks. */
-.timeline .swatch {
-  opacity: 0.55;
-}
-.timeline .swatch-interest {
-  opacity: 0.35;
-  box-shadow: inset 0 0 0 1.5px var(--chart-interest);
 }
 
 /* ---- Stat tiles ---- */
@@ -1029,9 +1034,16 @@ tbody tr:last-child .plus {
   margin-top: 3px;
   color: var(--accent);
 }
-.before .button-quiet {
-  align-self: flex-start;
-  margin-top: 0.25rem;
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.actions .button-quiet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
 }
 
 /* Read by screen readers, not shown. */

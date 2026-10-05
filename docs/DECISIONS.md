@@ -218,3 +218,33 @@ timeline is the clearest picture of how a loan works.
 **Rejected:** a serif for the numbers (money reads best in the sans - and
 the dataviz guidance says the same for hero figures); the rising-bars mark
 (read like a generic chart emoji).
+
+## 2026-10-05 - Calmer headlines, a stroke, real colors in the charts
+- **Newsreader instead of Instrument Serif.** Steven: the headline font
+  looked "spooky" - Instrument Serif is condensed and sharp. Newsreader is a
+  calm, normal-width editorial serif.
+- **A gradient stroke on the answer card** - lavender top left, teal bottom
+  right - so it reads as an object.
+- **Indigo for what you borrowed, orange for interest.** The grey was "too
+  neutral"; both bars and the timeline were hard to read. Warm reads as
+  cost, and blue/orange stays apart for every type of color vision. Both
+  pairs (light; dark and the answer card) pass every dataviz validator check,
+  and the contrast check now holds both bar colors to 3:1. The timeline is
+  two solid areas with a 2px gap, not washes.
+**Rejected:** keeping grey as quiet context - it made the picture too faint
+to read at a glance, which is the picture's only job.
+
+## 2026-10-05 - Keep this loan, add another to compare
+Every result ends with "Add another loan to compare" under "Start over". The
+loan just explained becomes Loan A ("Your loan" if they have it); they add
+Loan B. Comparison wording is now "loans", not "offers", since one may be a
+loan they already have.
+**Why:** Steven's ask - the natural next question after "what does this
+cost?" is "what about this other one?".
+**Honest limit:** comparing a loan you have with a new one, start to finish,
+answers "which costs more overall" - not "should I refinance", which depends
+on the interest left to pay. The comparison says so when Loan A is one they
+have, and points to a payoff quote.
+**Not done:** remembering loans after the page closes. Everything stays in
+the page while it's open, so "nothing you type leaves this page" stays true
+and nothing lingers on a shared phone.

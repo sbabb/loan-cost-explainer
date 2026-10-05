@@ -34,9 +34,9 @@ const plain = compareOffers([
   { name: '', loan: loan(2500000, 6.49, 60) },
   { name: '', loan: loan(2500000, 5.49, 60) },
 ])
-check('plain: blank names become letters', plain.offers.map((o) => o.name), ['Offer A', 'Offer B'])
+check('plain: blank names become letters', plain.offers.map((o) => o.name), ['Loan A', 'Loan B'])
 check('plain: cheaper', plain.cheaper, 1)
-check('plain: headline', plain.headline, 'Offer B would cost you $697.31 less in interest.')
+check('plain: headline', plain.headline, 'Loan B would cost you $697.31 less in interest.')
 check('plain: why', plain.why, 'It has a lower rate.')
 check('plain: payment too', plain.trade, 'It has the lower monthly payment too: $477.41 instead of $489.04.')
 
@@ -46,7 +46,7 @@ const amounts = compareOffers([
   { name: 'Smaller down payment', loan: loan(2500000, 6.49, 60) },
 ])
 check('amounts: note', amounts.amountsNote,
-  'These offers lend different amounts, so this compares the interest: what each one costs you to borrow.')
+  'These loans lend different amounts, so this compares the interest: what each one costs you to borrow.')
 check('amounts: why', amounts.why, 'It lends $5,000 less.')
 
 // 4. A tie.
@@ -55,12 +55,12 @@ const tie = compareOffers([
   { name: 'Two', loan: loan(2500000, 6.49, 60) },
 ])
 check('tie: no winner', tie.cheaper, null)
-check('tie: headline', tie.headline, 'Both offers would cost you $4,342.18 in interest.')
+check('tie: headline', tie.headline, 'Both loans would cost you $4,342.18 in interest.')
 check('tie: lead', tie.lead, 'They’d have the same monthly payment, $489.04.')
 check('both 0%', compareOffers([
   { name: '', loan: loan(120000, 0, 12) },
   { name: '', loan: loan(120000, 0, 24) },
-]).headline, 'Neither offer would cost you anything in interest.')
+]).headline, 'Neither loan would cost you anything in interest.')
 
 // 5. The numbers are the same ones the single-loan explanation uses.
 for (const [index, offer] of trap.offers.entries()) {

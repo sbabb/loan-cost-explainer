@@ -80,7 +80,9 @@ const pairs = [
   ['accent', 'surface', UI, 'focused input border'],
   ['error', 'surface', UI, 'error borders'],
   ['chart-interest', 'surface', UI, 'interest bars'],
+  ['chart-borrowed', 'surface', UI, 'borrowed bars'],
   ['hero-chart-interest', 'hero', UI, 'interest bars on the answer'],
+  ['hero-chart-borrowed', 'hero', UI, 'borrowed bars on the answer'],
 ]
 
 let failures = 0

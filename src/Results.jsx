@@ -1,6 +1,6 @@
 import { explainLoan } from './loan.js'
 import { addMonths, duration, money, monthYear, nextMonth, shortMonthYear } from './format.js'
-import { BackIcon } from './Icons.jsx'
+import { BackIcon, PlusIcon } from './Icons.jsx'
 import { CostBar, CostRows, HeroAmount, Legend } from './Charts.jsx'
 import Timeline from './Timeline.jsx'
 import { useCountUp } from './useCountUp.js'
@@ -53,6 +53,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
       </button>
 
       <section className="statement on-dark" aria-labelledby="answer">
+        <span className="stroke" aria-hidden="true" />
         <p className="eyebrow">{say('Your loan, explained', 'The loan you’re considering')}</p>
         <h1 id="answer" tabIndex={-1}>
           <span className="visually-hidden">{headline}</span>
@@ -212,9 +213,8 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
           <ul>
             <li>A lower monthly payment isn’t always cheaper. A longer loan usually means more interest in total.</li>
             <li>Ask for the Truth in Lending Disclosure. These same numbers will be on it.</li>
-            <li>Got another offer? Compare the two to see which costs less overall.</li>
+            <li>Got another offer? Add it below to see which costs less overall.</li>
           </ul>
-          <button type="button" className="button-quiet" onClick={onCompare}>Compare with another offer</button>
         </section>
       )}
 
@@ -223,7 +223,12 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
         day, so {say('your', 'the')} real total may differ by a few dollars.
       </p>
 
-      <button type="button" className="button-quiet" onClick={onStartOver}>Start over with a different loan</button>
+      <div className="actions">
+        <button type="button" className="button-quiet" onClick={onStartOver}>Start over with a different loan</button>
+        <button type="button" className="button-quiet" onClick={onCompare}>
+          <PlusIcon /> Add another loan to compare
+        </button>
+      </div>
     </main>
   )
 }

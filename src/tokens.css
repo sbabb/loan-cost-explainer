@@ -37,14 +37,15 @@
   --hero-soft: #b9bbd9;
   --hero-accent: #a5b4fc;
 
-  /* Charts: interest is the story (accent), what you borrowed is context
-     (quiet grey-indigo). Checked with the dataviz validator: clearly apart
-     for every type of color vision. The grey is under 3:1 on purpose, so
-     every bar also has its value written as text. */
-  --chart-borrowed: #b9bccf;
-  --chart-interest: #4f46e5;
-  --hero-chart-borrowed: #4a4c78;
-  --hero-chart-interest: #a5b4fc;
+  /* Charts: what you borrowed in the brand indigo, interest in a warm
+     orange - warm reads as "cost", and blue/orange is the pair that stays
+     apart for every type of color vision. Both checked with the dataviz
+     validator (lightness band, color-blind separation, 3:1 on the surface)
+     for light, dark and the answer card. Values are also always written. */
+  --chart-borrowed: #6366f1;
+  --chart-interest: #ea580c;
+  --hero-chart-borrowed: #6b6ef0;
+  --hero-chart-interest: #e0641a;
 
   --glow: rgb(99 102 241 / 0.16);
   --shadow-card: 0 1px 2px rgb(16 18 40 / 0.04), 0 8px 24px -6px rgb(16 18 40 / 0.08);
@@ -78,10 +79,10 @@
     --hero-soft: #b9bbd9;
     --hero-accent: #a5b4fc;
 
-    --chart-borrowed: #4a4d66;
-    --chart-interest: #a5b4fc;
-    --hero-chart-borrowed: #4a4c78;
-    --hero-chart-interest: #a5b4fc;
+    --chart-borrowed: #6b6ef0;
+    --chart-interest: #e0641a;
+    --hero-chart-borrowed: #6b6ef0;
+    --hero-chart-interest: #e0641a;
 
     --glow: rgb(99 102 241 / 0.22);
     --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.6);
@@ -93,8 +94,9 @@
 
 :root {
   --font-body: 'Geist Sans', system-ui, sans-serif;
-  /* Headlines only. Numbers stay in Geist - money reads best in the sans. */
-  --font-display: 'Instrument Serif', Georgia, serif;
+  /* Headlines only: a calm, normal-width editorial serif. Numbers stay in
+     Geist - money reads best in the sans. */
+  --font-display: 'Newsreader', Georgia, serif;
   --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
   --radius: 12px;
   --radius-card: 20px;

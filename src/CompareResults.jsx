@@ -7,7 +7,9 @@ import { useCountUp } from './useCountUp.js'
 // The comparison: which offer costs less, by how much and why, then both side
 // by side. Every number and sentence comes from compareOffers(), which
 // scripts/verify-compare.mjs checks; this file only lays them out.
-export default function CompareResults({ offers, onChangeOffers, onStartOver }) {
+// fromExisting: loan A is one they already have (carried over from its
+// explanation), so the comparison says what it does and doesn't tell them.
+export default function CompareResults({ offers, fromExisting, onChangeOffers, onStartOver }) {
   const comparison = compareOffers(offers)
   const { cheaper, headline, lead, why, trade, amountsNote } = comparison
   const [a, b] = comparison.offers
@@ -31,7 +33,8 @@ export default function CompareResults({ offers, onChangeOffers, onStartOver }) 
       </button>
 
       <section className="statement on-dark" aria-labelledby="answer">
-        <p className="eyebrow">Comparing two offers</p>
+        <span className="stroke" aria-hidden="true" />
+        <p className="eyebrow">Comparing two loans</p>
         <h1 id="answer" tabIndex={-1}>
           <span className="visually-hidden">{headline}</span>
           <span className="hero-lines" aria-hidden="true">
@@ -56,7 +59,7 @@ export default function CompareResults({ offers, onChangeOffers, onStartOver }) 
         />
       </section>
 
-      {(why || trade || amountsNote) && (
+      {(why || trade || amountsNote || fromExisting) && (
         <section className="card" aria-label="Why">
           {why && <p>{why}</p>}
           {trade && !isCatch && <p>{trade}</p>}
@@ -67,13 +70,20 @@ export default function CompareResults({ offers, onChangeOffers, onStartOver }) 
             </p>
           )}
           {amountsNote && <p className="small">{amountsNote}</p>}
+          {fromExisting && (
+            <p className="small">
+              This compares both loans from start to finish. If you’re thinking about refinancing the loan you
+              have, what matters is the interest you still have left to pay on it. Your credit union can give you
+              a payoff quote.
+            </p>
+          )}
         </section>
       )}
 
       <section className="card" aria-labelledby="side-by-side">
         <h2 id="side-by-side">Side by side</h2>
         <table>
-          <caption className="visually-hidden">The two offers compared</caption>
+          <caption className="visually-hidden">The two loans compared</caption>
           <thead>
             <tr>
               <td />

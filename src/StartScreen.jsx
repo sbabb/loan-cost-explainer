@@ -3,7 +3,7 @@ import { CompareIcon, DocumentIcon, LockIcon, NextIcon, SignIcon } from './Icons
 const CHOICES = [
   { id: 'have', icon: DocumentIcon, title: 'I already have this loan', sub: 'I’m making payments on it now' },
   { id: 'deciding', icon: SignIcon, title: 'I’m thinking about a loan', sub: 'I want to know the cost before I sign' },
-  { id: 'compare', icon: CompareIcon, title: 'I’m comparing two offers', sub: 'I want to see which one costs less' },
+  { id: 'compare', icon: CompareIcon, title: 'I’m comparing two loans', sub: 'I want to see which one costs less' },
 ]
 
 // Screen 1: one question that decides how everything after it is worded.

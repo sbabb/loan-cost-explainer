@@ -7,9 +7,9 @@ import { ArrowIcon, BackIcon, LockIcon } from './Icons.jsx'
 import { checkInputs, parseWhole } from './checkInputs.js'
 
 const LETTERS = ['a', 'b']
-const CTA = 'Compare these offers'
+const CTA = 'Compare these loans'
 
-// The comparison form: two offers, each with an optional name and the same
+// The comparison form: two loans, each with an optional name and the same
 // three numbers as a single loan. Each offer is checked by checkInputs(), so
 // the rules and messages are exactly the ones the single-loan form uses.
 //
@@ -59,7 +59,7 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
   // The list at the top: offer A's problems, then offer B's.
   const problems = []
   for (const letter of LETTERS) {
-    const label = `Offer ${letter.toUpperCase()}`
+    const label = `Loan ${letter.toUpperCase()}`
     const offerErrors = errors[letter]
     if (offerErrors.amount) problems.push({ id: `${letter}-amount`, text: `${label}: ${offerErrors.amount}` })
     if (offerErrors.rate) problems.push({ id: `${letter}-rate`, text: `${label}: ${offerErrors.rate}` })
@@ -75,9 +75,9 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
       </button>
 
       <header className="screen-head">
-        <p className="eyebrow">Comparing two offers</p>
-        <h1 tabIndex={-1}>Enter the two offers</h1>
-        <p className="intro">Use the numbers each lender gave you. You’ll see which costs less, and why.</p>
+        <p className="eyebrow">Comparing two loans</p>
+        <h1 tabIndex={-1}>Enter the two loans</h1>
+        <p className="intro">Use the numbers from each loan or offer. You’ll see which costs less, and why.</p>
       </header>
 
       <ErrorSummary problems={problems} ref={summaryRef} />
@@ -92,20 +92,20 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
             <section key={letter} className="card offer" aria-labelledby={`${letter}-title`}>
               <h2 id={`${letter}-title`}>
                 <span className="offer-letter" aria-hidden="true">{letter.toUpperCase()}</span>
-                Offer {letter.toUpperCase()}
+                Loan {letter.toUpperCase()}
               </h2>
               <Field
                 id={`${letter}-name`}
-                label="Who’s it from? (optional)"
-                hint="Like “My credit union” or “Dealer”. It’s only a label."
+                label="Name it (optional)"
+                hint="Like “My car loan”, “Credit union” or “Dealer”. It’s only a label."
                 maxLength={24}
                 value={values.name}
                 onChange={(text) => update(letter, 'name', text)}
               />
               <Field
                 id={`${letter}-amount`}
-                label="How much you’d borrow"
-                hint="The amount after any down payment or trade-in."
+                label="Amount borrowed"
+                hint="For an offer, the amount after any down payment. For a loan you have, the Amount Financed."
                 error={offerErrors.amount}
                 prefix="$"
                 inputMode="decimal"
