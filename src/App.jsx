@@ -4,11 +4,14 @@ import LoanForm from './LoanForm.jsx'
 import Results from './Results.jsx'
 import CompareForm from './CompareForm.jsx'
 import CompareResults from './CompareResults.jsx'
-import LookSwitch from './LookSwitch.jsx'
+import Header from './Header.jsx'
 
-const EMPTY = { amount: '', rate: '', term: '', month: '', year: '' }
-const EMPTY_OFFER = { name: '', amount: '', rate: '', term: '' }
+const EMPTY = { amount: '', rate: '', term: '', termUnit: 'months', month: '', year: '' }
+const EMPTY_OFFER = { name: '', amount: '', rate: '', term: '', termUnit: 'months' }
 const EMPTY_OFFERS = { a: EMPTY_OFFER, b: EMPTY_OFFER }
+
+// Which of the three steps each screen is: choose, enter, the answer.
+const STEPS = { start: 1, inputs: 2, compare: 2, results: 3, compareResults: 3 }
 
 const TITLES = {
   start: 'Loan Cost Explainer',
@@ -136,7 +139,7 @@ export default function App() {
           // The offer just explained becomes offer A; B starts empty.
           setOffers((old) => ({
             ...old,
-            a: { name: '', amount: values.amount, rate: values.rate, term: values.term },
+            a: { name: '', amount: values.amount, rate: values.rate, term: values.term, termUnit: values.termUnit },
           }))
           goTo('compare', hasIt)
         }}
@@ -146,7 +149,7 @@ export default function App() {
 
   return (
     <>
-      <LookSwitch />
+      <Header step={STEPS[screen]} />
       {content}
     </>
   )

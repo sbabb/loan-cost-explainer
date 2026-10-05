@@ -1,11 +1,18 @@
 import { explainLoan } from './loan.js'
 import { addMonths, duration, money, monthYear, nextMonth, shortMonthYear } from './format.js'
 import { BackIcon } from './Icons.jsx'
+import { CostBar, CostRows, Legend } from './Charts.jsx'
+import { useCountUp } from './useCountUp.js'
 
 export const EXTRA_CENTS = 5000 // the "$50 more a month"
 
+// "$4,342.18" while counting, so the number doesn't jump between "$4,342"
+// and "$4,342.07" as it climbs.
+const exact = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+
 // Screen 3: the explanation. Every number comes from explainLoan(), which
-// scripts/verify-loan.mjs checks; this file only puts them into words.
+// scripts/verify-loan.mjs checks; this file only puts them into words and
+// pictures.
 //
 // hasIt picks the wording: "you'll pay" for a loan they have, "you'd pay"
 // for one they're still deciding on. `say(mine, would)` keeps each pair of
@@ -18,6 +25,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
   const borrowed = loan.amountCents
   const interest = asAgreed.totalInterest
   const count = asAgreed.months
+  const shown = useCountUp(interest)
 
   // For a loan still being decided on, assume the first payment is next month.
   const first = loan.firstPayment ?? nextMonth(today)
@@ -30,6 +38,12 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
   const firstPayment = count === 1 ? asAgreed.lastPayment : payment
   const firstToLoan = firstPayment - firstInterest
 
+  const headline = interest > 0
+    ? say(`This loan will cost you ${money(interest)} in interest.`,
+      `This loan would cost you ${money(interest)} in interest.`)
+    : say('This loan won’t cost you anything in interest.',
+      'This loan wouldn’t cost you anything in interest.')
+
   return (
     <main>
       <button type="button" className="back" onClick={onChangeNumbers}>
@@ -37,28 +51,47 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
         <span>Change the numbers</span>
       </button>
 
-      <header className="screen-head">
-        <p className="eyebrow">{say('Your loan, explained', 'The loan you’re considering, explained')}</p>
-        <h1 tabIndex={-1}>
-          {interest > 0
-            ? say(`This loan will cost you ${money(interest)} in interest.`,
-              `This loan would cost you ${money(interest)} in interest.`)
-            : say('This loan won’t cost you anything in interest.',
-              'This loan wouldn’t cost you anything in interest.')}
+      <section className="statement on-dark" aria-labelledby="answer">
+        <p className="eyebrow">{say('Your loan, explained', 'The loan you’re considering')}</p>
+        <h1 id="answer" tabIndex={-1}>
+          <span className="visually-hidden">{headline}</span>
+          <span className="hero-lines" aria-hidden="true">
+            <span className="hero-lead">{say('This loan will cost you', 'This loan would cost you')}</span>
+            <span className="hero-figure">{shown === interest ? money(interest) : exact.format(shown / 100)}</span>
+            <span className="hero-lead">in interest.</span>
+          </span>
         </h1>
-        <p className="lead">
+        <p className="hero-sub">
           {interest > 0
-            ? say(`That’s on top of the ${money(borrowed)} you borrowed. Altogether you’ll pay back ` +
-                `${money(asAgreed.totalPaid)}, about ${perDollar} for every $1 you borrowed.`,
-              `That’s on top of the ${money(borrowed)} you’d borrow. Altogether you’d pay back ` +
-                `${money(asAgreed.totalPaid)}, about ${perDollar} for every $1 borrowed.`)
+            ? say(<>On top of the {money(borrowed)} you borrowed. That’s <strong>about {perDollar} back for
+                every $1</strong>.</>,
+              <>On top of the {money(borrowed)} you’d borrow. That’s <strong>about {perDollar} back for
+                every $1</strong>.</>)
             : say(`You’ll pay back exactly the ${money(borrowed)} you borrowed.`,
               `You’d pay back exactly the ${money(borrowed)} you’d borrow.`)}
         </p>
-      </header>
+        <CostBar borrowed={borrowed} interest={interest} />
+        <Legend
+          items={[
+            { label: say('What you borrowed', 'What you’d borrow'), value: money(borrowed) },
+            { label: 'Interest', value: money(interest), interest: true },
+            { label: say('Total you’ll pay back', 'Total you’d pay back'), value: money(asAgreed.totalPaid), total: true },
+          ]}
+        />
+      </section>
 
-      <section className="section" aria-labelledby="payments">
+      <section className="card" aria-labelledby="payments">
         <h2 id="payments">Your payments</h2>
+        <dl className="stats">
+          <div>
+            <dt>Each month</dt>
+            <dd>{money(payment)}</dd>
+          </div>
+          <div>
+            <dt>{say('Last payment', 'Last payment, about')}</dt>
+            <dd>{shortMonthYear(lastDue)}</dd>
+          </div>
+        </dl>
         <p>
           {count === 1
             ? say(`You’ll make one payment of ${money(asAgreed.lastPayment)}.`,
@@ -78,7 +111,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
         </p>
       </section>
 
-      <section className="section" aria-labelledby="first">
+      <section className="card" aria-labelledby="first">
         <h2 id="first">{say('Where your first payment goes', 'Where your first payment would go')}</h2>
         {firstInterest > 0 ? (
           <>
@@ -88,6 +121,13 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
               <>Of your first {money(firstPayment)}, <strong>{money(firstInterest)} would pay interest</strong> and{' '}
                 {money(firstToLoan)} would pay down what you owe.</>)}
             </p>
+            <CostBar borrowed={firstToLoan} interest={firstInterest} />
+            <Legend
+              items={[
+                { label: 'Pays down the loan', value: money(firstToLoan) },
+                { label: 'Pays interest', value: money(firstInterest), interest: true },
+              ]}
+            />
             {count > 1 && (
               <p>
                 Every month after that, a little less goes to interest and a little more goes to the loan,
@@ -104,9 +144,9 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
       </section>
 
       {hasIt && (
-        <section className="section" aria-labelledby="papers">
+        <section className="card" aria-labelledby="papers">
           <h2 id="papers">Match it to your loan papers</h2>
-          <p>Your Truth in Lending Disclosure uses different names for the same numbers.</p>
+          <p>Your loan papers use different names for the same numbers.</p>
           <dl className="papers">
             <PaperRow name="What you borrowed" value={money(borrowed)} paperName="Amount Financed" />
             <PaperRow name="Interest" value={money(interest)} paperName="Finance Charge" />
@@ -116,9 +156,21 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
         </section>
       )}
 
-      <section className="extra" aria-labelledby="extra">
-        <h2 id="extra">What if you paid $50 more a month?</h2>
+      <section className="card card-accent" aria-labelledby="extra">
+        <p className="eyebrow">What if</p>
+        <h2 id="extra">You paid $50 more a month?</h2>
         <p>{extraSummary(monthsSaved, interestSaved)}</p>
+        <CostRows
+          rows={[
+            { name: `As agreed · ${money(payment)}`, borrowed, interest },
+            {
+              name: `$50 extra · ${money(payment + EXTRA_CENTS)}`,
+              borrowed,
+              interest: withExtra.totalInterest,
+              pill: interestSaved > 0 ? `Saves ${money(interestSaved)}` : undefined,
+            },
+          ]}
+        />
         <table>
           <caption className="visually-hidden">Paying as agreed compared with paying $50 extra a month</caption>
           <thead>
@@ -158,7 +210,7 @@ export default function Results({ loan, hasIt, today, onChangeNumbers, onStartOv
       </section>
 
       {!hasIt && (
-        <section className="section before" aria-labelledby="before">
+        <section className="card before" aria-labelledby="before">
           <h2 id="before">Before you sign</h2>
           <ul>
             <li>A lower monthly payment isn’t always cheaper. A longer loan usually means more interest in total.</li>
@@ -191,7 +243,7 @@ function PaperRow({ name, value, paperName }) {
   )
 }
 
-// The one-line answer above the table, for every combination - including a
+// The one-line answer above the bars, for every combination - including a
 // 0% loan (nothing to save in interest) and a loan too short to finish sooner.
 function extraSummary(monthsSaved, interestSaved) {
   if (monthsSaved > 0 && interestSaved > 0) {

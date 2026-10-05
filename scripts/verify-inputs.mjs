@@ -1,7 +1,7 @@
 // Checks how typed text becomes numbers (src/checkInputs.js) and how numbers
 // become words and dates (src/format.js). Run with: npm run verify:inputs
 // A wrong parse is as bad as wrong math: "25,000" must be 2,500,000 cents.
-import { parseMoney, parseRate, parseWhole, checkInputs } from '../src/checkInputs.js'
+import { parseMoney, parseRate, parseWhole, checkInputs, groupThousands, caretAfterGrouping } from '../src/checkInputs.js'
 import { money, addMonths, monthYear, shortMonthYear, nextMonth, duration } from '../src/format.js'
 
 let failures = 0
@@ -86,6 +86,47 @@ check('already paid off', checkInputs({ ...good, year: '2015' }, { hasIt: true, 
   'Check the date and the number of payments.')
 check('last payment this month is fine',
   checkInputs({ ...good, month: '10', year: '2021' }, { hasIt: true, today }).errors, {})
+
+// 5. Commas while typing, and where the cursor ends up.
+check('commas added', groupThousands('10000'), '10,000')
+check('commas moved', groupThousands('1,0000'), '10,000')
+check('millions', groupThousands('1234567'), '1,234,567')
+check('cents kept', groupThousands('25000.5'), '25,000.5')
+check('dot while typing', groupThousands('25000.'), '25,000.')
+check('small number untouched', groupThousands('999'), '999')
+check('empty stays empty', groupThousands(''), '')
+check('dollar sign dropped (the box shows one)', groupThousands('$5000'), '5,000')
+check('10k left alone, not turned into 10', groupThousands('10k'), '10k')
+check('two dots left alone', groupThousands('1.2.3'), '1.2.3')
+check('grouped text still parses', parseMoney(groupThousands('1234567.89')), 123456789)
+// Typing the 5th digit of 10000: cursor was after "1000" + new "0" -> after all 5 digits.
+check('cursor after typing at the end', caretAfterGrouping('10,000', '10000'), 6)
+// Typing a 7 into the middle of "10,000" -> "107,000"... cursor after the 7.
+check('cursor after typing in the middle', caretAfterGrouping('107,000', '107'), 3)
+check('cursor at the start', caretAfterGrouping('10,000', ''), 0)
+
+// 6. Loan length in years.
+const yearsLoan = checkInputs({ ...good, term: '30', termUnit: 'years' }, { hasIt: false, today })
+check('30 years is 360 months', yearsLoan.loan && yearsLoan.loan.termMonths, 360)
+check('years: no years-as-months check',
+  checkInputs({ ...good, term: '5', termUnit: 'years' }, { hasIt: false, today }).termCheck, null)
+check('years: empty wording',
+  checkInputs({ ...good, term: '', termUnit: 'years' }, { hasIt: false, today }).errors.term,
+  'Enter the loan length in years, like 5.')
+check('years: part years',
+  checkInputs({ ...good, term: '2.5', termUnit: 'years' }, { hasIt: false, today }).errors.term,
+  'Enter whole years, like 5. For part of a year, choose Months.')
+check('years: too long',
+  checkInputs({ ...good, term: '41', termUnit: 'years' }, { hasIt: false, today }).errors.term,
+  'Enter 40 years or fewer.')
+// A mortgage's Closing Disclosure says "Loan Term: 30 years".
+check('have it: years too',
+  checkInputs({ ...good, term: '30', termUnit: 'years' }, { hasIt: true, today }).loan.termMonths, 360)
+check('have it: payments empty wording',
+  checkInputs({ ...good, term: '' }, { hasIt: true, today }).errors.term, 'Enter the number of payments, like 60.')
+check('have it: part years points to Payments',
+  checkInputs({ ...good, term: '2.5', termUnit: 'years' }, { hasIt: true, today }).errors.term,
+  'Enter whole years, like 5. For part of a year, choose Payments.')
 
 if (failures > 0) {
   console.error(`\n${failures} input check(s) failed.`)

@@ -7,9 +7,10 @@ import { duration } from './format.js'
 //
 // id: the term box's id ("term", "a-term"), so the note and check get
 //   matching ids for aria-describedby.
-// term: the number typed, or null. termCheck: { typed, asMonths } or null.
+// term: the number typed, or null. inYears: it was typed in years.
+// termCheck: { typed, asMonths } or null.
 // unit: "payments" or "months". cta: the button to press again if it's right.
-export default function TermNote({ id, term, hasError, termCheck, unit, hasIt, cta, onApply }) {
+export default function TermNote({ id, term, inYears = false, hasError, termCheck, unit, hasIt, cta, onApply }) {
   if (termCheck) {
     const { typed, asMonths } = termCheck
     return (
@@ -30,9 +31,11 @@ export default function TermNote({ id, term, hasError, termCheck, unit, hasIt, c
     )
   }
 
+  let note = ''
+  if (term && !hasError) {
+    note = inYears ? `That’s ${term * 12} monthly payments.` : `That’s ${duration(term)} of monthly payments.`
+  }
   return (
-    <p id={`${id}-note`} className="note" aria-live="polite">
-      {term && !hasError ? `That’s ${duration(term)} of monthly payments.` : ''}
-    </p>
+    <p id={`${id}-note`} className="note" aria-live="polite">{note}</p>
   )
 }

@@ -10,5 +10,6 @@ here until the current piece ships, then gets weighed against the others.
 - **A tab icon** (2026-10-04). There's a placeholder that stops the browser
   asking for one.
 
-Moved into the build (see DECISIONS.md): the three looks and automatic dark
-mode; comparing two offers (both 2026-10-04).
+Moved into the build (see DECISIONS.md): automatic dark mode and comparing
+two offers (2026-10-04). The three looks were built, then narrowed to Modern
+only (2026-10-05).

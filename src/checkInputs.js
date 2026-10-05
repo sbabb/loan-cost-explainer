@@ -18,6 +18,31 @@ export function parseMoney(text) {
   return Number(whole) * 100 + Number(fraction.padEnd(2, '0'))
 }
 
+// Commas while typing: "25000" -> "25,000", "1234567.5" -> "1,234,567.5".
+// Only touches text that is already a plain number (digits, commas, one
+// dot). Anything else - "10k" - is left exactly as typed for the checks to
+// catch; quietly dropping the "k" would turn it into a $10 loan.
+export function groupThousands(text) {
+  const clean = text.replace(/[$,\s]/g, '')
+  if (!/^\d*(\.\d*)?$/.test(clean)) return text
+  const [whole, fraction] = clean.split('.')
+  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return fraction === undefined ? grouped : `${grouped}.${fraction}`
+}
+
+// Where the cursor belongs after commas are added or removed: just after the
+// same number of digits (and dot) it was after before. `typedBefore` is the
+// text that was to the left of the cursor.
+export function caretAfterGrouping(formatted, typedBefore) {
+  const keep = typedBefore.replace(/[^\d.]/g, '').length
+  let seen = 0
+  for (let i = 0; i < formatted.length; i += 1) {
+    if (seen === keep) return i
+    if (/[\d.]/.test(formatted[i])) seen += 1
+  }
+  return formatted.length
+}
+
 // "6.49", "6.49%", ".5" -> 6.49. null if it isn't a number.
 export function parseRate(text) {
   const clean = text.replace(/[%\s]/g, '')
@@ -31,7 +56,11 @@ export function parseWhole(text) {
   return /^\d+$/.test(clean) ? Number(clean) : null
 }
 
-// values: what's in the boxes, all text: { amount, rate, term, month, year }.
+// values: what's in the boxes, all text: { amount, rate, term, termUnit,
+//   month, year }. termUnit is 'months' (the default) or 'years': papers
+//   and offers give it either way - a car loan's Truth in Lending Disclosure
+//   says "Number of Payments: 60", a mortgage's Closing Disclosure says
+//   "Loan Term: 30 years".
 //   month is '' or '0'-'11' (the dropdown); month/year only matter if hasIt.
 // hasIt: they already have this loan (true) or are still deciding (false).
 // shortTermOk: a term under 12 they've already been asked about and kept.
@@ -67,18 +96,22 @@ export function checkInputs(values, { hasIt, shortTermOk = null, today }) {
     errors.rate = `Enter a rate of ${MAX_RATE}% or less.`
   }
 
-  const term = parseWhole(values.term)
+  const inYears = values.termUnit === 'years'
+  const typedTerm = parseWhole(values.term)
+  const term = typedTerm === null ? null : inYears ? typedTerm * 12 : typedTerm
   if (values.term.trim() === '') {
-    errors.term = hasIt
-      ? 'Enter the number of payments, like 60.'
-      : 'Enter the loan length in months, like 60.'
+    if (inYears) errors.term = 'Enter the loan length in years, like 5.'
+    else if (hasIt) errors.term = 'Enter the number of payments, like 60.'
+    else errors.term = 'Enter the loan length in months, like 60.'
   } else if (term === null) {
-    errors.term = 'Enter a whole number, like 60.'
+    errors.term = inYears
+      ? `Enter whole years, like 5. For part of a year, choose ${hasIt ? 'Payments' : 'Months'}.`
+      : 'Enter a whole number, like 60.'
   } else if (term === 0) {
     errors.term = 'Enter 1 or more.'
   } else if (term > MAX_MONTHS) {
-    errors.term = `Enter ${MAX_MONTHS} or fewer. That’s 40 years.`
-  } else if (term < 12 && term !== shortTermOk) {
+    errors.term = inYears ? 'Enter 40 years or fewer.' : `Enter ${MAX_MONTHS} or fewer. That’s 40 years.`
+  } else if (!inYears && term < 12 && term !== shortTermOk) {
     // Probably years typed as months. Not an error - short loans exist - so
     // it stops them once, and the same number again carries on.
     termCheck = { typed: term, asMonths: term * 12 }

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import Field from './Field.jsx'
 import ErrorSummary from './ErrorSummary.jsx'
 import TermNote from './TermNote.jsx'
-import { BackIcon } from './Icons.jsx'
+import UnitChoice from './UnitChoice.jsx'
+import { ArrowIcon, BackIcon, LockIcon } from './Icons.jsx'
 import { checkInputs, parseWhole } from './checkInputs.js'
 
 const LETTERS = ['a', 'b']
@@ -50,8 +51,9 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
 
   function update(letter, name, text) {
     onChange(letter, name, text)
-    setErrors((old) => ({ ...old, [letter]: { ...old[letter], [name]: undefined } }))
-    if (name === 'term') setTermChecks((old) => ({ ...old, [letter]: null }))
+    const field = name === 'termUnit' ? 'term' : name
+    setErrors((old) => ({ ...old, [letter]: { ...old[letter], [field]: undefined } }))
+    if (field === 'term') setTermChecks((old) => ({ ...old, [letter]: null }))
   }
 
   // The list at the top: offer A's problems, then offer B's.
@@ -85,9 +87,13 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
           const values = offers[letter]
           const offerErrors = errors[letter]
           const termCheck = termChecks[letter]
+          const inYears = values.termUnit === 'years'
           return (
-            <section key={letter} className="offer" aria-labelledby={`${letter}-title`}>
-              <h2 id={`${letter}-title`}>Offer {letter.toUpperCase()}</h2>
+            <section key={letter} className="card offer" aria-labelledby={`${letter}-title`}>
+              <h2 id={`${letter}-title`}>
+                <span className="offer-letter" aria-hidden="true">{letter.toUpperCase()}</span>
+                Offer {letter.toUpperCase()}
+              </h2>
               <Field
                 id={`${letter}-name`}
                 label="Who’s it from? (optional)"
@@ -103,6 +109,7 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
                 error={offerErrors.amount}
                 prefix="$"
                 inputMode="decimal"
+                groupDigits
                 value={values.amount}
                 onChange={(text) => update(letter, 'amount', text)}
               />
@@ -119,10 +126,18 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
               />
               <Field
                 id={`${letter}-term`}
-                label="Loan length, in months"
-                hint="A 5-year loan is 60 months."
+                label="Loan length"
+                hint="In months or years, whichever the offer uses."
+                beforeBox={
+                  <UnitChoice
+                    id={`${letter}-term-unit`}
+                    value={values.termUnit}
+                    onChange={(next) => update(letter, 'termUnit', next)}
+                    labelledBy={`${letter}-term-label`}
+                  />
+                }
                 error={offerErrors.term}
-                suffix="months"
+                suffix={inYears ? 'years' : 'months'}
                 width="12.5rem"
                 inputMode="numeric"
                 value={values.term}
@@ -132,6 +147,7 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
                 <TermNote
                   id={`${letter}-term`}
                   term={parseWhole(values.term)}
+                  inYears={inYears}
                   hasError={Boolean(offerErrors.term)}
                   termCheck={termCheck}
                   unit="months"
@@ -147,10 +163,10 @@ export default function CompareForm({ offers, onChange, onBack, onCompare, today
           )
         })}
 
-        <button type="submit" className="button">{CTA}</button>
+        <button type="submit" className="button">{CTA} <ArrowIcon /></button>
       </form>
 
-      <p className="small">Nothing you type leaves this page. No sign-in, no account.</p>
+      <p className="small privacy"><LockIcon /> Nothing you type leaves this page. No sign-in, no account.</p>
     </main>
   )
 }

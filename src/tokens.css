@@ -1,0 +1,100 @@
+/* The look, as tokens: every color, font, corner, shadow and timing the app
+   uses. Components (index.css) only ever ask for a token - "the surface",
+   "the card corner" - never a hex of their own.
+
+   Benchmarked on the modern money products: Stripe, Mercury, Linear. Cool
+   near-white paper with a soft indigo glow at the top, white cards with
+   layered shadows, Geist type, one indigo accent, and a dark "statement"
+   card for the answer.
+
+   Light or dark follows the device setting automatically. Every color pair
+   is checked against WCAG 2.1 AA by scripts/verify-contrast.mjs, which finds
+   the blocks below by their "tokens:" comments - keep those when editing. */
+
+/* tokens: light */
+:root {
+  color-scheme: light;
+  --paper: #f5f6fa;
+  --surface: #ffffff;
+  --ink: #0b0b12;
+  --ink-soft: #565a69;
+  --accent: #4f46e5;
+  --accent-dark: #3730a3;
+  --accent-tint: #eef0ff;
+  --button: #4f46e5;
+  --button-hover: #4338ca;
+  --on-button: #ffffff;
+  --line-strong: #858a99;
+  --line: #e3e5ec;
+  --line-soft: #eef0f4;
+  --error: #c8261a;
+  --error-tint: #fdeeed;
+
+  /* The answer card stays dark in both modes - it's the one loud moment. */
+  --hero: #12122a;
+  --hero-ink: #f5f5ff;
+  --hero-soft: #b9bbd9;
+  --hero-accent: #a5b4fc;
+
+  /* Charts: interest is the story (accent), what you borrowed is context
+     (quiet grey-indigo). Checked with the dataviz validator: clearly apart
+     for every type of color vision. The grey is under 3:1 on purpose, so
+     every bar also has its value written as text. */
+  --chart-borrowed: #b9bccf;
+  --chart-interest: #4f46e5;
+  --hero-chart-borrowed: #4a4c78;
+  --hero-chart-interest: #a5b4fc;
+
+  --glow: rgb(99 102 241 / 0.16);
+  --shadow-card: 0 1px 2px rgb(16 18 40 / 0.04), 0 8px 24px -6px rgb(16 18 40 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(16 18 40 / 0.05), 0 16px 40px -10px rgb(16 18 40 / 0.16);
+  --shadow-button: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 10px 24px -8px rgb(79 70 229 / 0.55);
+  --ring: 0 0 0 4px rgb(79 70 229 / 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  /* tokens: dark */
+  :root {
+    color-scheme: dark;
+    --paper: #08080d;
+    --surface: #12121a;
+    --ink: #f3f3f8;
+    --ink-soft: #a3a5b5;
+    --accent: #a5b4fc;
+    --accent-dark: #c7d0ff;
+    --accent-tint: #1b1c33;
+    --button: #818cf8;
+    --button-hover: #a5b4fc;
+    --on-button: #0b0b12;
+    --line-strong: #6f7282;
+    --line: #262634;
+    --line-soft: #1c1c27;
+    --error: #ff8a80;
+    --error-tint: #2a1414;
+
+    --hero: #161634;
+    --hero-ink: #f5f5ff;
+    --hero-soft: #b9bbd9;
+    --hero-accent: #a5b4fc;
+
+    --chart-borrowed: #4a4d66;
+    --chart-interest: #a5b4fc;
+    --hero-chart-borrowed: #4a4c78;
+    --hero-chart-interest: #a5b4fc;
+
+    --glow: rgb(99 102 241 / 0.22);
+    --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.6);
+    --shadow-lift: 0 0 0 1px rgb(255 255 255 / 0.06), 0 16px 40px -10px rgb(0 0 0 / 0.7);
+    --shadow-button: 0 1px 0 rgb(255 255 255 / 0.25) inset, 0 10px 28px -8px rgb(129 140 248 / 0.45);
+    --ring: 0 0 0 4px rgb(165 180 252 / 0.22);
+  }
+}
+
+:root {
+  --font-body: 'Geist Sans', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+  --radius: 12px;
+  --radius-card: 20px;
+  --radius-button: 14px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

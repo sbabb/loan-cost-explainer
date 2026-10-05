@@ -92,7 +92,7 @@ Pressing Explain again with the same number carries on.
 mistake most likely to produce a confidently wrong answer.
 **Rejected:** blocking anything under 12 (short loans exist); saying nothing.
 
-## 2026-10-04 - Three looks, to test whether style changes trust
+## 2026-10-04 - Three looks, to test whether style changes trust (replaced 2026-10-05)
 The same screens, words and numbers in three looks: **Calm** (the original),
 **Terminal** (Cadence's look: monospace, sharp corners, Tokyo Night / Catppuccin
 Latte) and **Modern** (benchmarked on Stripe, Mercury and Linear: Geist,
@@ -110,6 +110,7 @@ three looks, light and dark.
 **Open question:** the switch is always visible, which suits a portfolio demo
 and research sessions but not a real member. Decide before the case study
 whether it stays, or only appears when the link names a look (`?look=`).
+*Resolved 2026-10-05: one look only, so the switch is gone.*
 
 ## 2026-10-04 - Dark mode follows the device, no switch for it
 Each look has a light and a dark version, chosen by the phone or computer's
@@ -141,3 +142,56 @@ Three answers: "I already have this loan", "I'm thinking about a loan",
 **Why:** "Do you already have this loan?" can't take a third answer.
 **Rejected:** keeping the yes/no question and hiding comparison on results
 only (you chose both ways in).
+
+## 2026-10-05 - Commas appear as you type an amount
+"300000" shows as "300,000" while typing, with the cursor staying put.
+Anything that isn't a plain number ("10k") is left as typed and the usual
+"Enter the amount as a number" message catches it.
+**Why:** six digits without commas are easy to misread by a factor of ten,
+and members check what they typed. Rewriting "10k" to "10" would silently
+make it a $10 loan - worse than an error.
+**Rejected:** adding commas only when leaving the box (you can't check the
+number while typing it).
+
+## 2026-10-05 - Loan length in months or years, when deciding or comparing
+A "Months | Years" switch above the loan length; months by default. A
+30-year mortgage is "30 years", not "360". The note underneath translates
+("That's 360 monthly payments").
+**Why:** offers are quoted both ways - auto loans in months, mortgages in
+years - and making people convert is the mistake the years check catches.
+**Kept as payments:** "I already have this loan" asks for the Number of
+Payments, because that's the number printed on the paperwork.
+*Changed 2026-10-05:* existing loans get the switch too, as "Payments |
+Years". A car loan's Truth in Lending Disclosure says "Number of Payments:
+60", but a mortgage's Closing Disclosure says "Loan Term: 30 years" - so
+both are words on someone's papers. Steven asked; it checked out.
+**Rejected:** guessing the unit from the size of the number (is 30 months or
+years?); whole years only.
+
+## 2026-10-05 - One look: Modern, pushed further
+Steven picked Modern; Calm, Terminal and the look switch are gone. Then
+Modern was taken from "tidy" to "beautiful":
+- **The answer is a dark statement card** with the interest as a large
+  number that counts up when it appears - the one moment of drama, on the
+  one number that matters. Screen readers get the sentence, not the count.
+- **The money is drawn, not just stated.** One idea everywhere: a bar that is
+  what you borrowed (quiet grey) plus the interest (indigo). Same picture for
+  the whole loan, the first payment, the $50 what-if and two offers side by
+  side - on one shared scale, so a longer bar really is more money.
+- **Depth and polish:** a header with a small logo mark and "Step 2 of 3",
+  start choices with icons, white cards with layered shadows over a soft
+  indigo glow, a segmented Months/Years switch, a glowing focus ring, an
+  indigo gradient button, Geist with Geist Mono for small labels.
+- **Gentle motion** (screens rise in, bars grow, the number counts) - and
+  none at all for anyone whose device asks for reduced motion.
+**Why:** Steven's call - "it's a loan cost explainer, but why not make it
+beautiful too?" Beauty here does a job: the bars make "the dealer costs more"
+visible before a word is read, and the big number makes the answer
+unmissable.
+**Rules kept:** charts follow the dataviz guidance (interest in the accent,
+borrowed as quiet context, values always written beside the bars, a table
+for the exact numbers); 30 color pairs checked for contrast in light and
+dark, including text over the answer card's glow.
+**Rejected:** keeping three looks for a trust test - one strong look serves
+the case study better than three diluted ones; glass/blur effects (contrast
+over busy backgrounds); a chart library (a few divs do it, nothing to load).

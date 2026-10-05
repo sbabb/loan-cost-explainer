@@ -1,6 +1,10 @@
 import { compareOffers } from './compareLoans.js'
 import { duration, money } from './format.js'
-import { BackIcon } from './Icons.jsx'
+import { BackIcon, InfoIcon } from './Icons.jsx'
+import { CostRows } from './Charts.jsx'
+import { useCountUp } from './useCountUp.js'
+
+const exact = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 
 // The comparison: which offer costs less, by how much and why, then both side
 // by side. Every number and sentence comes from compareOffers(), which
@@ -10,6 +14,13 @@ export default function CompareResults({ offers, onChangeOffers, onStartOver }) 
   const { cheaper, headline, lead, why, trade, amountsNote } = comparison
   const [a, b] = comparison.offers
   const isCheaper = (index) => (index === cheaper ? 'plus' : undefined)
+
+  // The big number: how much less the cheaper one costs (or, in a tie, what
+  // both cost).
+  const win = cheaper === null ? a : comparison.offers[cheaper]
+  const lose = cheaper === null ? b : comparison.offers[1 - cheaper]
+  const figure = cheaper === null ? a.interest : lose.interest - win.interest
+  const shown = useCountUp(figure)
 
   // "The catch: ..." gets its own box - it's the part people miss.
   const isCatch = trade?.startsWith('The catch: ')
@@ -21,26 +32,47 @@ export default function CompareResults({ offers, onChangeOffers, onStartOver }) 
         <span>Change the offers</span>
       </button>
 
-      <header className="screen-head">
+      <section className="statement on-dark" aria-labelledby="answer">
         <p className="eyebrow">Comparing two offers</p>
-        <h1 tabIndex={-1}>{headline}</h1>
-        <p className="lead">{lead}</p>
-      </header>
+        <h1 id="answer" tabIndex={-1}>
+          <span className="visually-hidden">{headline}</span>
+          <span className="hero-lines" aria-hidden="true">
+            <span className="hero-lead">
+              {cheaper === null ? 'Both offers would cost you' : `${win.name} would cost you`}
+            </span>
+            <span className="hero-figure">
+              {shown === figure ? money(figure) : exact.format(shown / 100)}
+              {cheaper !== null && ' less'}
+            </span>
+            <span className="hero-lead">in interest.</span>
+          </span>
+        </h1>
+        <p className="hero-sub">{lead}</p>
+        <CostRows
+          rows={[a, b].map((offer, index) => ({
+            name: offer.name,
+            borrowed: offer.loan.amountCents,
+            interest: offer.interest,
+            pill: index === cheaper ? 'Costs less' : undefined,
+          }))}
+        />
+      </section>
 
       {(why || trade || amountsNote) && (
-        <section className="section" aria-label="Why">
+        <section className="card" aria-label="Why">
           {why && <p>{why}</p>}
           {trade && !isCatch && <p>{trade}</p>}
           {isCatch && (
             <p className="callout">
-              <strong>The catch:</strong> {trade.slice('The catch: '.length)}
+              <InfoIcon />
+              <span><strong>The catch:</strong> {trade.slice('The catch: '.length)}</span>
             </p>
           )}
           {amountsNote && <p className="small">{amountsNote}</p>}
         </section>
       )}
 
-      <section className="extra" aria-labelledby="side-by-side">
+      <section className="card" aria-labelledby="side-by-side">
         <h2 id="side-by-side">Side by side</h2>
         <table>
           <caption className="visually-hidden">The two offers compared</caption>
@@ -67,7 +99,7 @@ export default function CompareResults({ offers, onChangeOffers, onStartOver }) 
         </table>
       </section>
 
-      <section className="section" aria-labelledby="before">
+      <section className="card" aria-labelledby="before">
         <h2 id="before">Before you sign</h2>
         <ul>
           <li>Make sure both rates are APRs. A quoted “rate” can leave out fees that the APR counts.</li>

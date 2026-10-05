@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import Field from './Field.jsx'
 import ErrorSummary from './ErrorSummary.jsx'
 import TermNote from './TermNote.jsx'
-import { AlertIcon, BackIcon } from './Icons.jsx'
+import UnitChoice from './UnitChoice.jsx'
+import { AlertIcon, ArrowIcon, BackIcon, LockIcon } from './Icons.jsx'
 import { checkInputs, parseWhole } from './checkInputs.js'
 import { MONTHS } from './format.js'
 
@@ -23,7 +24,10 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
   }, [attempts])
 
   const cta = hasIt ? 'Explain my loan' : 'Explain this loan'
-  const unit = hasIt ? 'payments' : 'months'
+  // The length can be given in years or months either way. For a loan they
+  // have, months are "payments" - the word on a Truth in Lending Disclosure.
+  const inYears = values.termUnit === 'years'
+  const unit = inYears ? 'years' : hasIt ? 'payments' : 'months'
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -43,8 +47,9 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
   // something they're already fixing.
   function update(name, text) {
     onChange(name, text)
-    setErrors((old) => ({ ...old, [name]: undefined }))
-    if (name === 'term') setTermCheck(null)
+    const field = name === 'termUnit' ? 'term' : name
+    setErrors((old) => ({ ...old, [field]: undefined }))
+    if (field === 'term') setTermCheck(null)
   }
 
   function applySuggestedTerm() {
@@ -57,7 +62,7 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
   if (errors.amount) problems.push({ id: 'amount', text: errors.amount })
   if (errors.rate) problems.push({ id: 'rate', text: errors.rate })
   if (errors.term) problems.push({ id: 'term', text: errors.term })
-  if (termCheck) problems.push({ id: 'term', text: hasIt ? 'Check the number of payments' : 'Check the loan length' })
+  if (termCheck) problems.push({ id: 'term', text: 'Check the loan length' })
   if (errors.month) problems.push({ id: 'month', text: errors.month })
   if (errors.year) problems.push({ id: 'year', text: errors.year })
 
@@ -74,14 +79,14 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
         <h1 tabIndex={-1}>{hasIt ? 'Find these numbers on your loan papers' : 'Enter the numbers from the loan offer'}</h1>
         <p className="intro">
           {hasIt
-            ? 'They’re near the top of the page called the Truth in Lending Disclosure.'
+            ? 'They’re on your Truth in Lending Disclosure, or your Closing Disclosure for a mortgage.'
             : 'No offer yet? A good guess still shows how the cost adds up.'}
         </p>
       </header>
 
       <ErrorSummary problems={problems} ref={summaryRef} />
 
-      <form onSubmit={handleSubmit} noValidate>
+      <form className="card form-card" onSubmit={handleSubmit} noValidate>
         <Field
           id="amount"
           label={hasIt ? 'How much you borrowed' : 'How much you want to borrow'}
@@ -91,6 +96,7 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
           error={errors.amount}
           prefix="$"
           inputMode="decimal"
+          groupDigits
           value={values.amount}
           onChange={(text) => update('amount', text)}
         />
@@ -111,10 +117,19 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
 
         <Field
           id="term"
-          label={hasIt ? 'Number of payments' : 'Loan length, in months'}
+          label="Loan length"
           hint={hasIt
-            ? 'Also on your loan papers, in the payment schedule.'
-            : 'Lenders often say years. A 5-year loan is 60 months.'}
+            ? 'Car and personal loans show the Number of Payments (like 60). A mortgage’s Closing Disclosure shows the Loan Term (like 30 years).'
+            : 'In months or years, whichever the offer uses.'}
+          beforeBox={
+            <UnitChoice
+              id="term-unit"
+              value={values.termUnit}
+              onChange={(next) => update('termUnit', next)}
+              labelledBy="term-label"
+              monthsLabel={hasIt ? 'Payments' : 'Months'}
+            />
+          }
           error={errors.term}
           suffix={unit}
           width="12.5rem"
@@ -126,6 +141,7 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
           <TermNote
             id="term"
             term={parseWhole(values.term)}
+            inYears={inYears}
             hasError={Boolean(errors.term)}
             termCheck={termCheck}
             unit={unit}
@@ -183,10 +199,10 @@ export default function LoanForm({ hasIt, values, onChange, onBack, onExplain, t
           </fieldset>
         )}
 
-        <button type="submit" className="button">{cta}</button>
+        <button type="submit" className="button">{cta} <ArrowIcon /></button>
       </form>
 
-      <p className="small">Nothing you type leaves this page. No sign-in, no account.</p>
+      <p className="small privacy"><LockIcon /> Nothing you type leaves this page. No sign-in, no account.</p>
     </main>
   )
 }
